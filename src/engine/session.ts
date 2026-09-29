@@ -16,9 +16,17 @@ export function makerIndex(units: Unit[]): Map<string, Maker> {
  */
 export function buildLesson(lesson: Lesson, r: () => number, carried: Maker[] = []): Slot[] {
   const first = lesson.kind === "warmup" ? carried.filter((m) => !lesson.items.includes(m)).slice(0, 5) : [];
+  const asked = new Set<string>();
+  // A maker listed twice should not ask the same thing twice: try again for a fresh one.
+  const fresh = (m: Maker) => {
+    let q = m.make(r);
+    for (let t = 0; t < 8 && asked.has(q.prompt); t++) q = m.make(r);
+    asked.add(q.prompt);
+    return q;
+  };
   return [
-    ...first.map((m) => ({ maker: m, q: m.make(r), phase: "carried" as const })),
-    ...lesson.items.map((m) => ({ maker: m, q: m.make(r), phase: "main" as const })),
+    ...first.map((m) => ({ maker: m, q: fresh(m), phase: "carried" as const })),
+    ...lesson.items.map((m) => ({ maker: m, q: fresh(m), phase: "main" as const })),
   ];
 }
 

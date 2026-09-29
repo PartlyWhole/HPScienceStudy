@@ -2,12 +2,18 @@
 import React, { useMemo, useState } from "react";
 import { UNITS } from "./content/course";
 import type { Lesson, Maker, Unit } from "./content/types";
-import { type Progress, finishLesson, loadProgress, saveProgress } from "./engine/progress";
+import { type Progress, finishLesson, loadProgress, recordAnswer, saveProgress } from "./engine/progress";
+import { PracticePlayer, PracticeSetup } from "./ui/Practice";
 import { makerIndex } from "./engine/session";
 import { LessonPlayer, NotesView } from "./ui/LessonPlayer";
 import { PlanPage } from "./ui/PlanPage";
 
-type Screen = { kind: "plan" } | { kind: "lesson"; unit: Unit; lesson: Lesson } | { kind: "notes"; unit: Unit };
+type Screen =
+  | { kind: "plan" }
+  | { kind: "lesson"; unit: Unit; lesson: Lesson }
+  | { kind: "notes"; unit: Unit }
+  | { kind: "practice-setup" }
+  | { kind: "practice"; chosen: string[] };
 
 export function App() {
   const [p, setP] = useState<Progress>(loadProgress);
@@ -35,6 +41,34 @@ export function App() {
     );
   }
 
+  if (screen.kind === "practice-setup")
+    return (
+      <PracticeSetup
+        units={UNITS}
+        progress={p}
+        onBack={() => setScreen({ kind: "plan" })}
+        onStart={(chosen) => setScreen({ kind: "practice", chosen })}
+      />
+    );
+
+  if (screen.kind === "practice")
+    return (
+      <PracticePlayer
+        units={UNITS}
+        progress={p}
+        chosen={screen.chosen}
+        // Kept as each answer comes in, so stopping part-way loses nothing.
+        onAnswer={(concepts, ok) =>
+          setP((cur) => {
+            const next = recordAnswer(cur, concepts, ok);
+            saveProgress(next);
+            return next;
+          })
+        }
+        onExit={() => setScreen({ kind: "plan" })}
+      />
+    );
+
   if (screen.kind === "notes") {
     const notes = screen.unit.lessons.flatMap((l) => l.notes ?? []);
     return (
@@ -57,6 +91,7 @@ export function App() {
         window.scrollTo(0, 0);
       }}
       onNotes={(unit) => setScreen({ kind: "notes", unit })}
+      onPractice={() => setScreen({ kind: "practice-setup" })}
     />
   );
 }

@@ -48,13 +48,21 @@ Inside a lesson:
 | Fill-in table | Built | The prefixes and their symbols, from memory. |
 | Multiple choice | Built | Where recognising is the skill: symbols, the prefix traps, the scientific-notation sense check. |
 | Graduated cylinder | Built | A drawn close-up. Lines are worth 0.2–5 mL, and the water climbs the glass. Covers reading the level and displacement. |
-| Conversion-factor builder | Unit 2 | The chain is built from unit tiles on horizontal fraction bars, with units cancelling on screen. An upside-down factor is caught and explained. Then the number. |
+| Conversion-factor builder | Built | The chain is built from unit tiles on horizontal fraction bars, with units cancelling on screen. An upside-down factor is caught and explained. Then the number. |
 | Vocabulary recall | Unit 3 | Term → the student writes a definition, then checks it against the key words. Matching and multiple choice too. |
 | Volume | Unit 4 | Boxes, cylinders (diameter given, radius needed), L-shapes, units cubed, percent difference. |
 | Timed practice test | Unit 5 | The plan's 19 questions in 30 minutes. Each miss is labelled with the plan's five mistake types and gets a fresh problem of the same kind. |
 | 3×5 study card | Unit 5 | Built with the student, as the plan suggests. |
 
-Endless practice arrives with Unit 2. It chooses questions by idea, weighted toward the weakest and most overdue ideas.
+**Conversion-factor builder, as built.** He types each factor's numbers and chooses its units, top and bottom, and units strike through as they cancel. A "Units left" line updates as he goes. Grading checks:
+
+- that each factor is true (its top and bottom the same amount), and that it is the right way up;
+- that the units left over are the ones asked for;
+- the number itself.
+
+Each fault gets its own note, and a worked setup is shown after a miss. Guided questions fill in the units and leave the numbers.
+
+**Endless practice (built).** He chooses ideas and questions keep coming, weighted toward the weakest and most overdue ideas. It never repeats the maker just used, a miss comes back three questions later, and only generators take part.
 
 ## Open questions (for the teacher)
 
@@ -67,4 +75,4 @@ The site uses safe defaults until these are answered:
 
 ## Status
 
-Unit 1 is built and live. Units 2–5 are shown on the plan with their session dates, and each will be added before its session.
+Units 1 and 2 and endless practice are built. Units 3–5 are shown on the plan with their session dates, and each will be added before its session.

@@ -27,7 +27,7 @@ export const pow10 = (n: number) => Number(`1e${n}`);
 const times = (n: number, k: number) => Number((n * pow10(k)).toPrecision(12));
 
 /** A fixed question, made the same way every time. */
-const fixed = (id: string, concepts: string[], q: Question): Maker => ({ id, concepts, make: () => q });
+const fixed = (id: string, concepts: string[], q: Question): Maker => ({ id, concepts, make: () => q, fixed: true });
 
 /** Which prefixes the book uses with each unit. */
 const USES: Record<string, string[]> = {

@@ -190,3 +190,52 @@ code { font-size: 0.95em; background: var(--accent-soft); padding: 1px 5px; bord
   .q-prompt, .notes h2, .lesson-done h2 { font-size: 20px; }
   .lesson-title { max-width: 34%; }
 }
+
+/* The conversion-factor chain */
+.chain { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 8px; padding: 14px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; font-size: 18px; }
+.chain.display { display: inline-flex; margin: 4px 0 12px; }
+.chain-help { margin: 0; font-size: 14.5px; }
+.chain-given { font-weight: 600; white-space: nowrap; }
+.chain-op { color: var(--muted); font-size: 20px; }
+.frac { display: inline-flex; flex-direction: column; align-items: center; gap: 4px; vertical-align: middle; }
+.frac > span { display: flex; align-items: center; gap: 4px; padding: 0 4px; white-space: nowrap; }
+.frac > span:first-child { border-bottom: 2px solid var(--ink); padding-bottom: 4px; }
+.frac.edit { padding: 6px; border-radius: 10px; border: 1px dashed var(--line); }
+.frac.edit.right { border: 1px solid var(--ok); background: var(--ok-soft); }
+.frac.edit.wrong { border: 1px solid var(--bad); background: var(--bad-soft); }
+.u-sym { font-weight: 600; }
+.u-sym.gone { text-decoration: line-through; text-decoration-thickness: 2px; text-decoration-color: var(--bad); opacity: 0.7; }
+.num-box { width: 5.2em; font: inherit; font-size: 17px; padding: 6px 8px; text-align: right; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; }
+.num-box.answer { width: 7em; }
+.unit-pick { font: inherit; font-size: 16px; font-weight: 600; padding: 5px 4px; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; }
+.unit-pick.gone { text-decoration: line-through; color: var(--muted); }
+.unit-pick:disabled { opacity: 1; border-color: transparent; background: transparent; appearance: none; -webkit-appearance: none; padding: 5px 2px; }
+.chain-answer { display: inline-flex; align-items: center; gap: 6px; }
+.chain-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.chain-left { font-size: 14.5px; color: var(--muted); margin-left: 4px; }
+.chain-left.ok b { color: var(--ok); }
+.chain-worked { display: flex; flex-direction: column; gap: 4px; }
+@media (max-width: 480px) {
+  .chain { font-size: 16px; padding: 10px; gap: 8px 6px; }
+  .num-box { width: 4.4em; font-size: 16px; }
+}
+
+/* Endless practice */
+.practice-card { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin: 18px 0 0; padding: 12px 16px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; }
+.practice-card > div { display: flex; flex-direction: column; }
+.practice-card .muted { font-size: 14px; }
+.practice h1 { margin: 0 0 4px; font-size: 26px; }
+.presets { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.idea-group h2 { font-size: 15px; margin: 18px 0 8px; color: var(--muted); }
+.ideas { display: flex; flex-wrap: wrap; gap: 8px; }
+.idea { display: inline-flex; align-items: center; gap: 8px; border-radius: 20px; padding: 7px 12px; min-height: 38px; font-size: 14.5px; }
+.idea.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.strength { display: inline-flex; gap: 2px; }
+.strength i { width: 5px; height: 11px; border-radius: 2px; background: var(--line); }
+.strength i.on { background: var(--ok); }
+.practice-start { position: sticky; bottom: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 22px; padding: 12px 16px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; }
+.practice-tally { flex: 1; font-weight: 600; font-size: 15px; }
+.strengths { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.strengths li { display: flex; justify-content: space-between; gap: 10px; }
+
+.badge.new { color: var(--accent); background: var(--accent-soft); }

@@ -1,7 +1,8 @@
 // The home page: the five sessions in order, each with its date and what it
 // gets ready for, and each unit's warm-up, lessons and exit check.
 import React from "react";
-import { COURSE_TITLE } from "../content/course";
+import { COURSE_TITLE, IDEAS } from "../content/course";
+import { isDue } from "../engine/practice";
 import type { Lesson, Unit } from "../content/types";
 import type { Progress } from "../engine/progress";
 
@@ -16,9 +17,11 @@ export function PlanPage(props: {
   progress: Progress;
   onLesson: (u: Unit, l: Lesson) => void;
   onNotes: (u: Unit) => void;
+  onPractice: () => void;
 }) {
   const { progress: p } = props;
   // The next thing to do: the first lesson not yet done, in the first ready unit that has one.
+  const due = IDEAS.filter((i) => props.units.some((u) => u.ready && u.id === i.unit) && isDue(p, i.id)).length;
   const next = props.units.flatMap((u) => (u.ready ? u.lessons : [])).find((l) => !p.done[l.id]);
   return (
     <div className="page plan">
@@ -30,6 +33,16 @@ export function PlanPage(props: {
           without notes — that's what quizzes and tests ask for.
         </p>
       </header>
+
+      <div className="practice-card">
+        <div>
+          <strong>Endless practice</strong>
+          <span className="muted">
+            {due ? due + " idea" + (due > 1 ? "s" : "") + " due for review" : "Nothing due — practise anything"}
+          </span>
+        </div>
+        <button className="primary" onClick={props.onPractice}>Practise</button>
+      </div>
 
       {props.units.map((u) => (
         <section key={u.id} className={"unit" + (u.ready ? "" : " coming")}>

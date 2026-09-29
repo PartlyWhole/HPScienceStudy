@@ -1,5 +1,6 @@
 // The shapes every question and lesson share.
 import type { Form } from "../lib/answer";
+import type { Factor, Units } from "./units";
 
 /** A wrong answer worth naming: when the student types this, say this. */
 export type Trap = { value: number; note: string };
@@ -55,7 +56,26 @@ export type Question =
       why: string;
       whyPerChoice?: Record<number, string>;
     }
-  | { kind: "table"; prompt: string; columns: string[]; rows: Cell[][]; why: string };
+  | { kind: "table"; prompt: string; columns: string[]; rows: Cell[][]; why: string }
+  | {
+      /**
+       * The conversion-factor method: the student writes each factor — its
+       * numbers and its units — watches the units cancel, then gives the
+       * answer. The setup is graded, not only the number.
+       */
+      kind: "chain";
+      prompt: string;
+      context?: string[];
+      given: { n: number; units: Units };
+      target: Units;
+      answer: number;
+      /** A worked setup, shown after a miss. */
+      solution: Factor[];
+      /** Guided: each factor's units filled in, top and bottom, leaving the numbers. */
+      guided?: boolean;
+      traps?: Trap[];
+      why: string;
+    };
 
 /** Something that makes questions: a fixed one from the plan, or a generator. */
 export type Maker = {
@@ -63,6 +83,8 @@ export type Maker = {
   /** The ideas a question from it practises. */
   concepts: string[];
   make: (r: () => number) => Question;
+  /** Always the same question (one of the plan's own): kept out of endless practice. */
+  fixed?: boolean;
 };
 
 /** A card of notes, read before practising. */
