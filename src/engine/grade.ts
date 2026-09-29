@@ -108,3 +108,13 @@ export function gradeChain(q: ChainQ, factors: Factor[], raw: string): ChainVerd
   if (numberOk && !(factorOk.every(Boolean) && unitsOk)) notes.unshift("Right number — but the setup has to show why.");
   return { ok: numberOk && unitsOk && factorOk.every(Boolean), notes, factorOk, unitsOk, numberOk };
 }
+
+/** One part of a question in steps: the number within its rounding, and a trap named if it is one. */
+export function gradePart(part: import("../content/types").Part, raw: string): Verdict {
+  const p = parseAnswer(raw);
+  if (!p) return { ok: false, note: "That isn't a number I can read." };
+  const slack = Math.abs(part.answer) * (part.within ?? 0.005);
+  if (close(p.value, part.answer, slack)) return { ok: true };
+  const trap = part.traps?.find((t) => close(p.value, t.value, Math.abs(t.value) * (part.within ?? 0.005)));
+  return { ok: false, note: trap?.note };
+}

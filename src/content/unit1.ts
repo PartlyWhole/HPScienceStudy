@@ -59,7 +59,10 @@ export const prefixFill: Maker = {
     const base = pick(r, Object.keys(USES));
     const p = byName(pick(r, USES[base]));
     const up = r() < 0.5;
-    const n = r() < 0.6 ? 1 : pick(r, [2, 3, 4.5, 7, 25, 0.5]);
+    // Mostly one unit, as the plan asks. A few of them only when the answer
+    // stays a comfortable number — no 0.000025 to count zeros in.
+    let n = r() < 0.6 ? 1 : pick(r, [2, 3, 4.5, 7, 25]);
+    if (times(n, up ? p.power : -p.power) < 1) n = 1;
     const from = up ? p.symbol + base : base;
     const to = up ? base : p.symbol + base;
     const answer = times(n, up ? p.power : -p.power);
@@ -228,11 +231,15 @@ const SCALES: Scale[] = [
 
 const tidy = (v: number) => Number(v.toFixed(4));
 
-/** A close-up of about sixteen lines around the water's level. */
+/**
+ * A close-up of sixteen lines with the water's level near the middle — never
+ * at an edge, where the curve would be cut off — and at least one number.
+ */
 export function closeUp(s: Scale, level: number, extra: Partial<Cylinder> = {}): Cylinder {
-  const from = Math.max(0, Math.floor((level - 7 * s.line) / s.label) * s.label);
-  const to = Math.min(s.capacity, tidy(from + 16 * s.line));
-  return { capacity: s.capacity, line: s.line, label: s.label, level, from, to, ...extra };
+  const span = 16 * s.line;
+  let from = tidy(Math.floor(level / s.line - 8) * s.line);
+  from = Math.max(0, Math.min(from, s.capacity - span));
+  return { capacity: s.capacity, line: s.line, label: s.label, level, from, to: tidy(from + span), ...extra };
 }
 
 /** A level on a line, away from the ends of the scale. */
@@ -325,6 +332,7 @@ export const displacement: Maker = {
 export const prefixTable = fixed("warmup-prefix-table", ["prefixes"], {
   kind: "table",
   prompt: "From memory: write the prefix and its symbol for each amount.",
+  context: ["Write what you remember from class. Leave a box blank if you don't know it yet — that's what this is for."],
   columns: ["Means", "Prefix", "Symbol"],
   rows: PREFIXES.map((p) => [
     { given: p.means },

@@ -4,10 +4,11 @@
 import React from "react";
 import type { Cylinder } from "../content/types";
 
-const TOP = 16, BOTTOM = 296, LEFT = 58, RIGHT = 122, W = 150;
+const TOP = 16, BOTTOM = 296, LEFT = 58, RIGHT = 122;
 
 export function CylinderFigure(props: { cylinder: Cylinder }) {
   const c = props.cylinder;
+  const W = c.mark ? 230 : 150;
   const span = c.to - c.from;
   const y = (v: number) => BOTTOM - ((v - c.from) / span) * (BOTTOM - TOP);
   const perLine = ((BOTTOM - TOP) * c.line) / span;
@@ -21,11 +22,19 @@ export function CylinderFigure(props: { cylinder: Cylinder }) {
   const surface = `M ${LEFT} ${yE} Q ${mid} ${2 * yL - yE} ${RIGHT} ${yE}`;
 
   return (
-    <figure className="cylinder">
+    <figure className={"cylinder" + (c.mark ? " marked" : "")}>
       <svg viewBox={`0 0 ${W} ${BOTTOM + 8}`} role="img" aria-label={c.caption ?? "Graduated cylinder"}>
         <path className="cyl-water" d={`${surface} L ${RIGHT} ${BOTTOM} L ${LEFT} ${BOTTOM} Z`} />
         <path className="cyl-meniscus" d={surface} />
         {c.object && <rect className="cyl-object" x={mid - 16} y={BOTTOM - 44} width={32} height={30} rx={6} />}
+        {c.mark && (
+          <g>
+            {/* Eye level with the bottom of the curve, and the edges to ignore. */}
+            <line className="cyl-eye" x1={mid} x2={W - 2} y1={yL} y2={yL} />
+            <text className="cyl-note" x={W - 2} y={yL + 16} textAnchor="end">read here</text>
+            <text className="cyl-note dim" x={W - 2} y={yE - 10} textAnchor="end">not the edges</text>
+          </g>
+        )}
         {ticks.map((v) => (
           <g key={v}>
             <line className={isLabel(v) ? "cyl-tick major" : "cyl-tick"} x1={LEFT} x2={LEFT + (isLabel(v) ? 26 : 13)} y1={y(v)} y2={y(v)} />

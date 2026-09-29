@@ -5,6 +5,7 @@ import type { Question } from "../content/types";
 import { type Factor, cancel, unitText, unitsLike } from "../content/units";
 import { gradeChain } from "../engine/grade";
 import { formatStandard, parseAnswer, preview } from "../lib/answer";
+import { VerdictBar } from "./VerdictBar";
 
 type ChainQ = Extract<Question, { kind: "chain" }>;
 
@@ -202,19 +203,19 @@ export function ChainQuestion(props: { q: ChainQ; onAnswered: (ok: boolean) => v
         </div>
       )}
 
-      <div className={"q-bar" + (verdict ? (verdict.ok ? " ok" : " bad") : "")}>
-        {verdict && (
-          <div className="q-verdict" role="status" aria-live="polite">
-            <strong>{verdict.ok ? "Right" : "Not quite"}</strong>
-            <span>{verdict.ok ? q.why : [...verdict.notes, q.why].join(" ")}</span>
-          </div>
-        )}
-        {verdict ? (
-          <button className="primary" onClick={props.onContinue} autoFocus>Continue</button>
-        ) : (
-          <button className="primary" disabled={!ready} onClick={check}>Check</button>
-        )}
-      </div>
+      <VerdictBar
+        shown={
+          verdict && {
+            ok: verdict.ok,
+            note: verdict.notes[0],
+            answer: formatStandard(q.answer) + " " + unitText(q.target),
+            why: [...verdict.notes.slice(1), q.why].join(" "),
+          }
+        }
+        ready={ready}
+        onCheck={check}
+        onContinue={props.onContinue}
+      />
     </div>
   );
 }

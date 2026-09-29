@@ -13,6 +13,10 @@ const KIND: Record<Lesson["kind"], { icon: string; note: string }> = {
   cards: { icon: "▤", note: "No notes" },
 };
 
+/** How long a lesson is, in the words a student would use. */
+const countOf = (l: Lesson, short = false) =>
+  l.kind === "cards" ? (short ? `${l.items.length} cards` : `${l.items.length} cards, each right twice`) : `${l.items.length} question${l.items.length > 1 ? "s" : ""}`;
+
 export function PlanPage(props: {
   units: Unit[];
   progress: Progress;
@@ -24,26 +28,27 @@ export function PlanPage(props: {
   // The next thing to do: the first lesson not yet done, in the first ready unit that has one.
   const due = IDEAS.filter((i) => props.units.some((u) => u.ready && u.id === i.unit) && isDue(p, i.id)).length;
   const next = props.units.flatMap((u) => (u.ready ? u.lessons : [])).find((l) => !p.done[l.id]);
+  const nextLesson = next && { lesson: next, unit: props.units.find((u) => u.lessons.includes(next))! };
   return (
     <div className="page plan">
       <header className="plan-head">
         <h1>HP Science Study</h1>
         <p className="plan-course">{COURSE_TITLE}</p>
         <p className="muted">
-          Five short sessions, each before a deadline. Every one starts with a warm-up and ends with an exit check, both
-          without notes — that's what quizzes and tests ask for.
+          One short lesson at a time, in order. Each session starts with a warm-up and ends with a check — both without
+          notes, like a quiz.
         </p>
       </header>
 
-      <div className="practice-card">
-        <div>
-          <strong>Endless practice</strong>
-          <span className="muted">
-            {due ? due + " idea" + (due > 1 ? "s" : "") + " due for review" : "Nothing due — practise anything"}
+      {nextLesson && (
+        <button className="start-here" onClick={() => props.onLesson(nextLesson.unit, nextLesson.lesson)}>
+          <span className="start-kicker">{Object.keys(p.done).length ? "Next up" : "Start here"}</span>
+          <span className="start-title">{nextLesson.lesson.title}</span>
+          <span className="start-meta">
+            Session {nextLesson.unit.n} · {countOf(nextLesson.lesson)}
           </span>
-        </div>
-        <button className="primary" onClick={props.onPractice}>Practise</button>
-      </div>
+        </button>
+      )}
 
       {props.units.map((u) => (
         <section key={u.id} className={"unit" + (u.ready ? "" : " coming")}>
@@ -69,7 +74,7 @@ export function PlanPage(props: {
                         {KIND[l.kind].note && <em className="badge">{KIND[l.kind].note}</em>}
                       </span>
                       <span className="lesson-state">
-                        {l === next ? "Next" : last ? last.right + "/" + last.total : ""}
+                        {last ? last.right + "/" + last.total : countOf(l, true)}
                       </span>
                     </button>
                   </li>
@@ -81,6 +86,16 @@ export function PlanPage(props: {
           )}
         </section>
       ))}
+
+      <div className="practice-card">
+        <div>
+          <strong>Endless practice</strong>
+          <span className="muted">
+            {due ? due + " idea" + (due > 1 ? "s" : "") + " due for review" : "Mixed questions on anything, for as long as you like"}
+          </span>
+        </div>
+        <button onClick={props.onPractice}>Practise</button>
+      </div>
 
       <footer className="plan-foot muted">
         Progress stays in this browser only. Build {__BUILD_ID__}

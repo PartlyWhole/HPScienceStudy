@@ -2,8 +2,8 @@
 // then how it went. Any answered question can be gone back to with ‹ ›; a
 // miss comes back once at the end, freshly made.
 import React, { useMemo, useRef, useState } from "react";
-import type { Lesson, Maker, Note } from "../content/types";
-import { type Slot, againAllowed, buildLesson } from "../engine/session";
+import type { Lesson, Maker, Note, Question } from "../content/types";
+import { type Slot, againAllowed, buildLesson, retryOf } from "../engine/session";
 import { rng } from "../lib/rng";
 import { QuestionView } from "./QuestionView";
 
@@ -42,11 +42,23 @@ export function LessonPlayer(props: {
   const [view, setView] = useState(0);
   const [reached, setReached] = useState(0);
   const [results, setResults] = useState<(boolean | undefined)[]>([]);
+  const [scores, setScores] = useState<(string | undefined)[]>([]);
 
-  const answered = (i: number, ok: boolean) => {
+  const answered = (i: number, ok: boolean, detail?: { score?: string; retry?: Question }) => {
     setResults((x) => Object.assign([...x], { [i]: ok }));
+    if (detail?.score) setScores((x) => Object.assign([...x], { [i]: detail.score }));
     const s = slots[i];
-    if (!ok && againAllowed(lesson, s)) setSlots((all) => [...all, { maker: s.maker, q: s.maker.make(r), phase: "again" }]);
+    if (!ok && againAllowed(lesson, s)) {
+      // The miss comes back a few questions on — long enough that it has to
+      // be remembered, not read back off the screen — and freshly made.
+      // With nothing to ask in between, it would only be read back off the
+      // screen: then it waits for the next warm-up instead.
+      const again: Slot = { maker: s.maker, q: detail?.retry ?? retryOf(lesson, s, r), phase: "again" };
+      setSlots((all) => {
+        const at = Math.min(all.length, Math.max(i + 4, reached + 1));
+        return at > i + 1 ? [...all.slice(0, at), again, ...all.slice(at)] : all;
+      });
+    }
   };
   const advance = (i: number) => {
     setView(i + 1);
@@ -57,7 +69,8 @@ export function LessonPlayer(props: {
   const firstTry = slots.map((s, i) => ({ s, ok: results[i] })).filter((x) => x.s.phase !== "again" && x.ok !== undefined);
   const right = firstTry.filter((x) => x.ok).length;
   const answers: Answer[] = firstTry.map((x) => ({ makerId: x.s.maker.id, concepts: x.s.maker.concepts, correct: !!x.ok }));
-  const progress = results.filter((x) => x !== undefined).length / slots.length;
+  const answeredCount = results.filter((x) => x !== undefined).length;
+  const progress = answeredCount / slots.length;
   const noNotes = lesson.kind !== "learn";
 
   const header = useMemo(
@@ -78,7 +91,7 @@ export function LessonPlayer(props: {
         <div className="progress" role="progressbar" aria-valuenow={Math.round(progress * 100)} aria-valuemin={0} aria-valuemax={100}>
           <span style={{ width: (reading ? 0 : progress * 100) + "%" }} />
         </div>
-        <span className="lesson-title">{header}</span>
+        <span className="lesson-title">{reading || finished ? header : `${Math.min(view + 1, slots.length)} of ${slots.length}`}</span>
       </div>
 
       {reading ? (
@@ -90,7 +103,7 @@ export function LessonPlayer(props: {
               {s.phase === "carried" && <span className="tag carried">Missed last time</span>}
               {s.phase === "again" && <span className="tag again">One more go</span>}
               {i < reached && results[i] !== undefined && <span className="tag past">Question {i + 1} · answered</span>}
-              <QuestionView q={s.q} onAnswered={(ok) => answered(i, ok)} onContinue={() => advance(i)} />
+              <QuestionView q={s.q} onAnswered={(ok, d) => answered(i, ok, d)} onContinue={() => advance(i)} />
             </div>
           ))}
           {finished && (
@@ -109,6 +122,7 @@ export function LessonPlayer(props: {
                       <button onClick={() => setView(i)}>
                         <span className={results[i] ? "mark ok" : "mark bad"}>{results[i] ? "✓" : "✗"}</span>
                         <span>{s.q.prompt}</span>
+                        {scores[i] && <span className="review-score">{scores[i]}</span>}
                       </button>
                     </li>
                   ),

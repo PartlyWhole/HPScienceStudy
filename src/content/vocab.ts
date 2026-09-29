@@ -25,22 +25,12 @@ export const TERMS: Term[] = [
     ],
   },
   {
-    term: "International System of Units",
-    model: "The SI: the measurement system scientists everywhere use, published in 1960.",
-    group: "si",
+    term: "International System of Units (the SI)",
+    model: "The SI: the system of units scientists everywhere use. It was published in 1960 and is run from Sèvres, France.",
     keys: [
       { label: "the SI", any: ["si", "metric"] },
       { label: "used by scientists everywhere", any: ["scientist", "everywhere", "world", "international", "all over"] },
-      { label: "published 1960", any: ["1960"] },
-    ],
-  },
-  {
-    term: "SI System",
-    model: "The International System of Units, run from Sèvres, France.",
-    group: "si",
-    keys: [
-      { label: "International System of Units", any: ["international", "system of units", "metric"] },
-      { label: "run from Sèvres, France", any: ["sevres", "sèvres", "france", "paris"] },
+      { label: "published 1960, run from Sèvres, France", any: ["1960", "sevres", "france", "paris"] },
     ],
   },
   {

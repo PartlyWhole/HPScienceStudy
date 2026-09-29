@@ -19,10 +19,28 @@ export type Cylinder = {
   to: number;
   /** Something sunk in the water, for displacement. */
   object?: boolean;
+  /** For the notes: point at the bottom of the curve and draw eye level. */
+  mark?: boolean;
   caption?: string;
 };
 
-export type Figure = { kind: "cylinders"; cylinders: Cylinder[] };
+/** A solid drawn to its numbers, with its measurements labelled. */
+export type Solid =
+  | { shape: "box"; l: number; w: number; h: number; unit: string; labels?: [string, string, string] }
+  | { shape: "cylinder"; h: number; unit: string; d?: number; r?: number; labels?: { across: string; height: string } }
+  | { shape: "lshape"; a: number; b: number; c: number; d: number; h: number; unit: string };
+
+export type Figure = { kind: "cylinders"; cylinders: Cylinder[] } | { kind: "solid"; solid: Solid };
+
+/** One part of a question worked in steps: r first, then V, then liters. */
+export type Part = {
+  label: string;
+  answer: number;
+  unit?: string;
+  /** Rounding allowed, as a fraction of the answer (0.005 is half a percent). */
+  within?: number;
+  traps?: Trap[];
+};
 
 /** A cell of a fill-in table: shown, or to be written (text or a number). */
 export type Cell =
@@ -56,7 +74,8 @@ export type Question =
       why: string;
       whyPerChoice?: Record<number, string>;
     }
-  | { kind: "table"; prompt: string; columns: string[]; rows: Cell[][]; why: string }
+  | { kind: "table"; prompt: string; context?: string[]; columns: string[]; rows: Cell[][]; why: string }
+  | { kind: "steps"; prompt: string; context?: string[]; figure?: Figure; parts: Part[]; why: string }
   | {
       /**
        * Write it from memory: a definition or a short explanation, checked

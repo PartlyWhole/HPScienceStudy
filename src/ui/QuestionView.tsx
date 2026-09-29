@@ -3,45 +3,72 @@
 import React, { useRef, useState } from "react";
 import type { Cell, Question } from "../content/types";
 import { gradeCell, gradeNumber, gradeText } from "../engine/grade";
-import { formatStandard, parseAnswer, preview } from "../lib/answer";
-import { CylinderFigure } from "./CylinderFigure";
+import { formatSci, formatStandard, parseAnswer, preview } from "../lib/answer";
+import { type Shown, VerdictBar } from "./VerdictBar";
+import { FigureView } from "./FigureView";
+import { StepsQuestion } from "./Steps";
 import { ChainQuestion } from "./Chain";
 import { RecallQuestion } from "./Recall";
 
-type Props = { q: Question; onAnswered: (ok: boolean) => void; onContinue: () => void };
-type Verdict = { ok: boolean; text: string };
+/**
+ * `retry`, when given, is what to ask again after a miss: only the table
+ * cells that were wrong, say, rather than the whole question.
+ */
+export type Answered = (ok: boolean, detail?: { score?: string; retry?: Question }) => void;
+type Props = { q: Question; onAnswered: Answered; onContinue: () => void };
 
 export function QuestionView(props: Props) {
   if (props.q.kind === "chain") return <ChainQuestion q={props.q} onAnswered={props.onAnswered} onContinue={props.onContinue} />;
   if (props.q.kind === "recall") return <RecallQuestion q={props.q} onAnswered={props.onAnswered} onContinue={props.onContinue} />;
+  if (props.q.kind === "steps") return <StepsQuestion q={props.q} onAnswered={props.onAnswered} onContinue={props.onContinue} />;
   return <SimpleQuestion {...props} q={props.q} />;
 }
 
-function SimpleQuestion(props: Omit<Props, "q"> & { q: Exclude<Question, { kind: "chain" | "recall" }> }) {
+function SimpleQuestion(props: Omit<Props, "q"> & { q: Exclude<Question, { kind: "chain" | "recall" | "steps" }> }) {
   const { q } = props;
   const [entry, setEntry] = useState("");
   const [choice, setChoice] = useState<number | null>(null);
   const [cells, setCells] = useState<string[]>([]);
-  const [verdict, setVerdict] = useState<Verdict | null>(null);
+  const [verdict, setVerdict] = useState<Shown | null>(null);
   const done = verdict !== null;
 
+  // A table can be checked with blanks: a blank is "don't know yet", and
+  // making someone type junk into it to move on teaches nothing.
   const ready =
     q.kind === "number" ? parseAnswer(entry) !== null
     : q.kind === "text" ? entry.trim() !== ""
     : q.kind === "choice" ? choice !== null
-    : q.rows.every((row, i) => row.every((c, j) => "given" in c || (cells[i * 10 + j] ?? "").trim() !== ""));
+    : true;
 
   const check = () => {
     if (!ready || done) return;
+    if (q.kind === "table") {
+      const marks = q.rows.map((row, i) => row.map((c, j) => gradeCell(c, cells[i * 10 + j] ?? "")));
+      const graded = marks.flat().filter((m) => m !== undefined);
+      const right = graded.filter(Boolean).length;
+      const ok = right === graded.length;
+      setVerdict({ ok, score: `${right} of ${graded.length}`, note: ok ? undefined : "The right answers are under the red boxes.", why: q.why });
+      // Only the rows with a miss come back, with what was right filled in.
+      const rows = q.rows
+        .map((row, i) => (marks[i].some((m) => m === false) ? row.map((c, j) => (marks[i][j] ? { given: "text" in c ? c.text[0] : "number" in c ? formatStandard(c.number) : "" } : c)) : null))
+        .filter(Boolean) as Cell[][];
+      props.onAnswered(ok, { score: `${right}/${graded.length}`, retry: ok ? undefined : { ...q, rows, context: undefined, prompt: "Again, the ones you missed: " + q.prompt.replace(/^From memory: /, "") } });
+      return;
+    }
     let ok = false;
     let note: string | undefined;
-    if (q.kind === "number") ({ ok, note } = gradeNumber(q, entry));
-    else if (q.kind === "text") ok = gradeText(q.accept, entry, q.caseSensitive);
-    else if (q.kind === "choice") {
+    let answer: string | undefined;
+    if (q.kind === "number") {
+      ({ ok, note } = gradeNumber(q, entry));
+      answer = (q.form === "sci" ? formatSci(q.answer) : formatStandard(q.answer)) + (q.unit ? " " + q.unit : "");
+    } else if (q.kind === "text") {
+      ok = gradeText(q.accept, entry, q.caseSensitive);
+      answer = q.accept[0];
+    } else {
       ok = choice === q.correct;
       if (!ok) note = q.whyPerChoice?.[choice!];
-    } else ok = q.rows.every((row, i) => row.every((c, j) => gradeCell(c, cells[i * 10 + j] ?? "") !== false));
-    setVerdict({ ok, text: ok ? q.why : [note, q.why].filter(Boolean).join(" ") });
+    }
+    setVerdict({ ok, note, answer, why: q.why });
     props.onAnswered(ok);
   };
 
@@ -50,13 +77,7 @@ function SimpleQuestion(props: Omit<Props, "q"> & { q: Exclude<Question, { kind:
       {"context" in q && q.context?.map((c, i) => <p key={i} className="q-context">{c}</p>)}
       <h2 className="q-prompt">{q.prompt}</h2>
 
-      {"figure" in q && q.figure && (
-        <div className="q-figure">
-          {q.figure.cylinders.map((c, i) => (
-            <CylinderFigure key={i} cylinder={c} />
-          ))}
-        </div>
-      )}
+      {"figure" in q && q.figure && <FigureView figure={q.figure} />}
 
       {q.kind === "number" && <NumberEntry value={entry} onChange={setEntry} unit={q.unit} disabled={done} onEnter={check} form={q.form} />}
       {q.kind === "text" && <TextEntry value={entry} onChange={setEntry} disabled={done} onEnter={check} />}
@@ -85,23 +106,7 @@ function SimpleQuestion(props: Omit<Props, "q"> & { q: Exclude<Question, { kind:
         />
       )}
 
-      <div className={"q-bar" + (verdict ? (verdict.ok ? " ok" : " bad") : "")}>
-        {verdict && (
-          <div className="q-verdict" role="status" aria-live="polite">
-            <strong>{verdict.ok ? "Right" : "Not quite"}</strong>
-            <span>{verdict.text}</span>
-          </div>
-        )}
-        {verdict ? (
-          <button className="primary" onClick={props.onContinue} autoFocus>
-            Continue
-          </button>
-        ) : (
-          <button className="primary" disabled={!ready} onClick={check}>
-            Check
-          </button>
-        )}
-      </div>
+      <VerdictBar shown={verdict} ready={ready} onCheck={check} onContinue={props.onContinue} />
     </div>
   );
 }

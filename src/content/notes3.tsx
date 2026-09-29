@@ -4,7 +4,7 @@ import { ChainDisplay } from "../ui/Chain";
 import type { Note } from "./types";
 import { stepFactor } from "./unit2";
 import { FACTS, type Term } from "./vocab";
-import { TERMS_A, TERMS_B } from "./unit3";
+import { TERM_SETS } from "./unit3";
 
 export const RATE_NOTES: Note[] = [
   {
@@ -38,20 +38,22 @@ const table = (terms: Term[]) => (
   </table>
 );
 
-export const VOCAB_A_NOTES: Note[] = [
+const TITLES = ["Units and systems", "Meter, kilogram, second, liter", "Prefixes, factors and shapes"];
+
+/** One card per set of four terms: each term and the key words its definition needs. */
+export const VOCAB_NOTES: Note[][] = TERM_SETS.map((terms, i) => [
   {
-    title: "The SI and its units",
+    title: TITLES[i],
     body: (
       <>
-        <p>Say each definition in your own words. What matters is the key words.</p>
-        {table(TERMS_A)}
+        <p>Say each one in your own words. What matters is the key words.</p>
+        {table(terms)}
       </>
     ),
   },
-];
+]);
 
-export const VOCAB_B_NOTES: Note[] = [
-  { title: "Liters, prefixes, factors and shapes", body: table(TERMS_B) },
+export const FACT_NOTES: Note[] = [
   {
     title: "Facts that show up next to the vocabulary",
     body: (

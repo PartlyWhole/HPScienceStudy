@@ -32,3 +32,19 @@ export function buildLesson(lesson: Lesson, r: () => number, carried: Maker[] = 
 
 /** A miss comes back once, freshly made, at the end — except in the exit check, which is a check. */
 export const againAllowed = (lesson: Lesson, slot: Slot) => lesson.kind !== "exit" && slot.phase !== "again";
+
+/**
+ * A fresh question for a miss. A generator makes a new one; a fixed question
+ * from the plan is swapped for a generator in the same lesson on the same
+ * idea, so the retry is recalled rather than read back. Only when there is no
+ * such generator does the same question come back.
+ */
+export function retryOf(lesson: Lesson, slot: Slot, r: () => number): import("../content/types").Question {
+  if (!slot.maker.fixed) {
+    let q = slot.maker.make(r);
+    for (let t = 0; t < 8 && q.prompt === slot.q.prompt; t++) q = slot.maker.make(r);
+    return q;
+  }
+  const sibling = lesson.items.find((m) => !m.fixed && m.concepts.some((c) => slot.maker.concepts.includes(c)) && m.make(r).kind === slot.q.kind);
+  return (sibling ?? slot.maker).make(r);
+}

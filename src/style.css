@@ -176,6 +176,7 @@ code { font-size: 0.95em; background: var(--accent-soft); padding: 1px 5px; bord
 /* The graduated cylinder */
 .cylinder { margin: 0; display: flex; flex-direction: column; align-items: center; }
 .cylinder svg { width: 170px; height: auto; }
+.cylinder.marked svg { width: 250px; }
 .cylinder figcaption { font-size: 13px; color: var(--muted); }
 .cyl-water { fill: var(--water); opacity: 0.8; }
 .cyl-meniscus { fill: none; stroke: var(--water-line); stroke-width: 2; }
@@ -249,3 +250,43 @@ code { font-size: 0.95em; background: var(--accent-soft); padding: 1px 5px; bord
 .keys li.missing { color: var(--muted); }
 .recall-model { margin: 4px 0 0; padding: 10px 12px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; }
 .recall-decide { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+
+/* Solids, and questions worked in steps */
+.solid { margin: 0; width: 100%; max-width: 360px; }
+.solid svg { width: 100%; height: auto; }
+.solid-face { stroke: var(--ink); stroke-width: 1.6; }
+.solid-face.front { fill: var(--accent-soft); }
+.solid-face.top { fill: var(--card); }
+.solid-face.side { fill: var(--line); }
+.solid-measure { stroke: var(--accent); stroke-width: 1.6; stroke-dasharray: 4 3; }
+.solid-dot { fill: var(--accent); }
+.solid-split { stroke: var(--accent); stroke-width: 1.6; stroke-dasharray: 5 4; }
+.solid-label { font-size: 13px; font-weight: 600; fill: var(--ink); }
+.solid-note { font-size: 12px; fill: var(--muted); }
+.parts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.parts label { display: flex; flex-direction: column; gap: 4px; }
+.part-label { font-weight: 600; }
+.parts li.right .entry-input { border-color: var(--ok); background: var(--ok-soft); }
+.parts li.wrong .entry-input { border-color: var(--bad); background: var(--bad-soft); }
+.part-note { display: block; font-size: 14px; color: var(--bad); margin-top: 4px; }
+
+.cyl-eye { stroke: var(--bad); stroke-width: 2; stroke-dasharray: 5 4; }
+.cyl-note { font-size: 12px; font-weight: 700; fill: var(--bad); }
+.cyl-note.dim { fill: var(--muted); font-weight: 600; }
+.q-score { font-weight: 600; }
+.q-answer { font-weight: 600; }
+.q-why { color: var(--ink); }
+.link.why { align-self: flex-start; font-size: 14px; }
+.review-score { margin-left: auto; font-weight: 600; color: var(--muted); white-space: nowrap; }
+
+/* Start here */
+.start-here {
+  width: 100%; margin: 16px 0 0; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left;
+  padding: 16px 18px; border-radius: 16px; background: var(--accent); color: var(--accent-ink); border: 0;
+}
+.start-kicker { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.85; }
+.start-title { font-size: 20px; font-weight: 700; }
+.start-meta { font-size: 14px; opacity: 0.9; }
+.practice-card { margin-top: 22px; }
+
+.notes-figure { display: flex; justify-content: center; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 8px; margin-bottom: 10px; }

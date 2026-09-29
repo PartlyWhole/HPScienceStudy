@@ -39,6 +39,17 @@ Inside a lesson:
 - A miss comes back once, freshly made, at the end. The exit check is the exception, since it is a check.
 - Any answered question can be revisited with ‹ ›.
 
+## For a young learner
+
+Rules the site keeps, from walking through it as a first-time 13-year-old:
+
+- **Short lessons.** A lesson is 8 questions at most, and a card set is 6 cards, so a sitting ends before attention runs out. The home page shows each lesson's size and one "Start here".
+- **Blanks are allowed.** A fill-in table can be checked with boxes left empty, since a blank means "don't know yet". It is scored cell by cell ("4 of 10"), and only the missed rows come back.
+- **Short feedback.** The verdict, the one thing that went wrong, and the answer. The full reasoning sits behind "Why?".
+- **Retries are remembered, not re-read.** A miss comes back three questions later, as a fresh variant where there is one. With nothing in between, it waits for the next warm-up instead.
+- **Notes aren't the answer key.** The notes' worked examples never use a practice or exit question's numbers. Notes introduce at most four new terms at a time, and the cylinder notes show a drawn cylinder with the bottom of the curve marked.
+- **Gentle first contact.** The first warm-up says to leave blank what he doesn't know yet. Answers like "a million" are read as numbers.
+
 ## Question types
 
 | Type | Status | What it asks |

@@ -127,8 +127,8 @@ export function rateMaker(id: string, o: { guided?: boolean } = {}): Maker {
 // Vocabulary and facts
 // ---------------------------------------------------------------------------
 
-export const TERMS_A = TERMS.slice(0, 8);
-export const TERMS_B = TERMS.slice(8);
+/** Four terms at a time: about what working memory holds. */
+export const TERM_SETS: Term[][] = [TERMS.slice(0, 4), TERMS.slice(4, 8), TERMS.slice(8)];
 
 const recallOf = (t: Term): Question => ({
   kind: "recall",
@@ -138,8 +138,9 @@ const recallOf = (t: Term): Question => ({
   why: t.model,
 });
 
-/** One card per term, for the cards drill. */
-export const CARDS: Maker[] = TERMS.map((t) => fixed("card-" + t.term.replace(/\s+/g, "-").toLowerCase(), ["vocab"], recallOf(t)));
+/** One card per term, for the cards drill, in two sets of six. */
+export const CARDS: Maker[] = TERMS.map((t) => fixed("card-" + t.term.replace(/[^a-z]+/gi, "-").toLowerCase(), ["vocab"], recallOf(t)));
+export const CARD_SETS: Maker[][] = [CARDS.slice(0, 6), CARDS.slice(6)];
 
 /** Define a term from memory, from these terms. */
 export function recallTerm(id: string, terms: Term[]): Maker {

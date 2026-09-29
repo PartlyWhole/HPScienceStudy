@@ -16,6 +16,8 @@ export function normalize(raw: string): string {
   s = s.replace(/10([⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+)/g, (_, sup: string) => "10^" + [...sup].map((c) => SUPERSCRIPT[c]).join(""));
   s = s.replace(/[−–—]/g, "-").replace(/[×✕✖*·]/g, "x");
   s = s.replace(/\s+/g, "").replace(/,/g, "");
+  // A plus sign on a positive power: 9.3e+7, 9.3 x 10^+7.
+  s = s.replace(/(e|\^)\+/g, "$1");
   return s;
 }
 
@@ -26,8 +28,23 @@ const POWER = /^10\^\(?(-?\d+)\)?$/;
 const FRACTION = new RegExp(`^(${NUM})/(${NUM})$`);
 const PLAIN = new RegExp(`^${NUM}$`);
 
+const WORD: Record<string, number> = { hundred: 100, thousand: 1e3, million: 1e6, billion: 1e9 };
+
+/**
+ * "a million", "one thousand", "a hundredth", "one millionth" — the way a
+ * prefix's size is said aloud. Read as the number it names.
+ */
+function numberWords(raw: string): number | null {
+  const m = raw.trim().toLowerCase().match(/^(?:a|one|1)?\s*(hundred|thousand|million|billion)(th|ths)?$/);
+  if (!m) return null;
+  const v = WORD[m[1]];
+  return m[2] ? 1 / v : v;
+}
+
 /** What the student typed, as a number and the form it was written in — or null. */
 export function parseAnswer(raw: string): Parsed | null {
+  const words = numberWords(raw);
+  if (words !== null) return { value: words, form: "standard" };
   const s = normalize(raw);
   if (!s) return null;
   let m = s.match(SCI) ?? s.match(SCI_E);

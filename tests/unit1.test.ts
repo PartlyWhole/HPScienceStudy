@@ -28,6 +28,9 @@ describe("reading answers", () => {
     expect(parseAnswer("−3")?.value).toBe(-3);
     expect(parseAnswer(".5")?.value).toBe(0.5);
     expect(parseAnswer("abc")).toBeNull();
+    expect(parseAnswer("a million")?.value).toBe(1_000_000);
+    expect(parseAnswer("9.3e+7")).toMatchObject({ value: 93_000_000, form: "sci" });
+    expect(parseAnswer("one thousandth")?.value).toBe(0.001);
     expect(parseAnswer("1/0")).toBeNull();
   });
 
@@ -66,11 +69,14 @@ describe("unit 1", () => {
           expect(Number.isFinite(q.answer), where).toBe(true);
           expect(gradeNumber(q, typed(q)).ok, where + " typed " + typed(q)).toBe(true);
           for (const t of q.traps ?? []) expect(Math.abs(t.value - q.answer) > (q.tolerance ?? 0) + 1e-12, where + " trap equals answer").toBe(true);
-          for (const c of q.figure?.cylinders ?? []) {
+          for (const c of q.figure?.kind === "cylinders" ? q.figure.cylinders : []) {
             expect(c.level, where).toBeGreaterThanOrEqual(c.from);
             expect(c.level, where).toBeLessThanOrEqual(c.to);
             expect(Math.abs(c.level / c.line - Math.round(c.level / c.line)) < 1e-6, where + " level on a line").toBe(true);
             expect((c.to - c.from) / c.label, where + " a number shows").toBeGreaterThanOrEqual(1);
+            // The surface is never at an edge, where its curve would be cut off.
+            expect(c.level - c.from, where + " room below").toBeGreaterThanOrEqual(2 * c.line - 1e-9);
+            expect(c.to - c.level, where + " room above").toBeGreaterThanOrEqual(2 * c.line - 1e-9);
           }
         }
         if (q.kind === "choice") {
