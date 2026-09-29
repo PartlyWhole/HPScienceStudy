@@ -59,6 +59,18 @@ export type Question =
   | { kind: "table"; prompt: string; columns: string[]; rows: Cell[][]; why: string }
   | {
       /**
+       * Write it from memory: a definition or a short explanation, checked
+       * against the key words it needs. When the check can't tell, the
+       * student marks it honestly against the model answer.
+       */
+      kind: "recall";
+      prompt: string;
+      model: string;
+      keys: import("./vocab").Key[];
+      why: string;
+    }
+  | {
+      /**
        * The conversion-factor method: the student writes each factor — its
        * numbers and its units — watches the units cancel, then gives the
        * answer. The setup is graded, not only the number.
@@ -97,9 +109,12 @@ export type Lesson = {
    * warm-up and exit check are done without notes — the skill the quizzes
    * test; a learn lesson reads its notes first.
    */
-  kind: "warmup" | "learn" | "exit";
+  kind: "warmup" | "learn" | "exit" | "cards";
   notes?: Note[];
-  /** Asked in this order, each once; a miss comes back once at the end. */
+  /**
+   * Asked in this order, each once; a miss comes back once at the end. A
+   * cards lesson instead goes round until each is right twice in a row.
+   */
   items: Maker[];
 };
 

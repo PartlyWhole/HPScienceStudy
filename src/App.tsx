@@ -7,6 +7,7 @@ import { PracticePlayer, PracticeSetup } from "./ui/Practice";
 import { makerIndex } from "./engine/session";
 import { LessonPlayer, NotesView } from "./ui/LessonPlayer";
 import { PlanPage } from "./ui/PlanPage";
+import { CardsPlayer } from "./ui/Cards";
 
 type Screen =
   | { kind: "plan" }
@@ -24,6 +25,19 @@ export function App() {
     setP(next);
     saveProgress(next);
   };
+
+  if (screen.kind === "lesson" && screen.lesson.kind === "cards")
+    return (
+      <CardsPlayer
+        key={screen.lesson.id}
+        lesson={screen.lesson}
+        onExit={(answers) => {
+          if (answers) update(finishLesson(p, screen.lesson.id, answers));
+          setScreen({ kind: "plan" });
+          window.scrollTo(0, 0);
+        }}
+      />
+    );
 
   if (screen.kind === "lesson") {
     const carried = p.carry.map((id) => index.get(id)).filter(Boolean) as Maker[];

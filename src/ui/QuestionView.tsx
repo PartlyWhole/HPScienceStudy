@@ -6,16 +6,18 @@ import { gradeCell, gradeNumber, gradeText } from "../engine/grade";
 import { formatStandard, parseAnswer, preview } from "../lib/answer";
 import { CylinderFigure } from "./CylinderFigure";
 import { ChainQuestion } from "./Chain";
+import { RecallQuestion } from "./Recall";
 
 type Props = { q: Question; onAnswered: (ok: boolean) => void; onContinue: () => void };
 type Verdict = { ok: boolean; text: string };
 
 export function QuestionView(props: Props) {
   if (props.q.kind === "chain") return <ChainQuestion q={props.q} onAnswered={props.onAnswered} onContinue={props.onContinue} />;
+  if (props.q.kind === "recall") return <RecallQuestion q={props.q} onAnswered={props.onAnswered} onContinue={props.onContinue} />;
   return <SimpleQuestion {...props} q={props.q} />;
 }
 
-function SimpleQuestion(props: Omit<Props, "q"> & { q: Exclude<Question, { kind: "chain" }> }) {
+function SimpleQuestion(props: Omit<Props, "q"> & { q: Exclude<Question, { kind: "chain" | "recall" }> }) {
   const { q } = props;
   const [entry, setEntry] = useState("");
   const [choice, setChoice] = useState<number | null>(null);

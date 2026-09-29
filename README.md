@@ -1,6 +1,6 @@
 # HP Science Study
 
-Study practice for Chapter 8, **Measurement and Units**: metric prefixes, scientific notation, graduated cylinders, the conversion-factor method, rates, vocabulary and volume. Units 1 and 2 are ready; there is endless practice on any idea.
+Study practice for Chapter 8, **Measurement and Units**: metric prefixes, scientific notation, graduated cylinders, the conversion-factor method, rates, vocabulary and volume. Units 1–3 are ready; there is endless practice on any idea.
 
 Live at **https://partlywhole.github.io/HPScienceStudy/**
 

@@ -239,3 +239,13 @@ code { font-size: 0.95em; background: var(--accent-soft); padding: 1px 5px; bord
 .strengths li { display: flex; justify-content: space-between; gap: 10px; }
 
 .badge.new { color: var(--accent); background: var(--accent-soft); }
+
+/* Writing a definition from memory */
+.recall-input { font: inherit; font-size: 17px; padding: 10px 12px; background: var(--card); color: var(--ink); border: 1px solid var(--line); border-radius: 10px; resize: vertical; }
+.recall-check { display: flex; flex-direction: column; gap: 6px; }
+.keys { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.keys li { font-weight: 600; }
+.keys li.found { color: var(--ok); }
+.keys li.missing { color: var(--muted); }
+.recall-model { margin: 4px 0 0; padding: 10px 12px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; }
+.recall-decide { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }

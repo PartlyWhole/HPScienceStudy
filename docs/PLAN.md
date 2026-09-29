@@ -49,7 +49,7 @@ Inside a lesson:
 | Multiple choice | Built | Where recognising is the skill: symbols, the prefix traps, the scientific-notation sense check. |
 | Graduated cylinder | Built | A drawn close-up. Lines are worth 0.2–5 mL, and the water climbs the glass. Covers reading the level and displacement. |
 | Conversion-factor builder | Built | The chain is built from unit tiles on horizontal fraction bars, with units cancelling on screen. An upside-down factor is caught and explained. Then the number. |
-| Vocabulary recall | Unit 3 | Term → the student writes a definition, then checks it against the key words. Matching and multiple choice too. |
+| Vocabulary recall | Built | Term → the student writes a definition, then checks it against the key words. Matching and multiple choice too. |
 | Volume | Unit 4 | Boxes, cylinders (diameter given, radius needed), L-shapes, units cubed, percent difference. |
 | Timed practice test | Unit 5 | The plan's 19 questions in 30 minutes. Each miss is labelled with the plan's five mistake types and gets a fresh problem of the same kind. |
 | 3×5 study card | Unit 5 | Built with the student, as the plan suggests. |
@@ -61,6 +61,13 @@ Inside a lesson:
 - the number itself.
 
 Each fault gets its own note, and a worked setup is shown after a miss. Guided questions fill in the units and leave the numbers.
+
+**Unit 3, as built.**
+
+- **Rates.** The chain handles "per" units: convert the top unit, then the bottom, and a bottom unit on the wrong side is named as upside down. The plan's mile and gallon factors (1,609 m, 3.785 L) are used where it says to.
+- **Vocabulary.** He writes each definition, and it is checked against the plan's key words. A short key word ("SI", "7") must stand as a whole word, so "basic" doesn't count as "SI". When a key word is missing he compares with the model answer and marks it himself.
+- **Matching and multiple choice.** Both run both ways (term from definition, definition from term), and the facts are true-or-false questions.
+- **The cards drill** is the plan's routine: every one of the 13 cards right twice in a row. A missed card returns three cards later.
 
 **Endless practice (built).** He chooses ideas and questions keep coming, weighted toward the weakest and most overdue ideas. It never repeats the maker just used, a miss comes back three questions later, and only generators take part.
 
@@ -75,4 +82,4 @@ The site uses safe defaults until these are answered:
 
 ## Status
 
-Units 1 and 2 and endless practice are built. Units 3–5 are shown on the plan with their session dates, and each will be added before its session.
+Units 1–3 and endless practice are built. Units 4 and 5 are shown on the plan with their session dates, and each will be added before its session.

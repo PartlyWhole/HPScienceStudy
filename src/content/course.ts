@@ -5,6 +5,20 @@
 import type { Unit } from "./types";
 import { CYLINDER_NOTES, PREFIX_NOTES, SCI_NOTES } from "./notes1";
 import { FACTOR_NOTES, FACTS_NOTES, METHOD_NOTES, TWO_STEP_NOTES } from "./notes2";
+import { RATE_NOTES, VOCAB_A_NOTES, VOCAB_B_NOTES } from "./notes3";
+import {
+  CARDS,
+  EXIT_3,
+  RATE_PRACTICE,
+  TERMS_A,
+  TERMS_B,
+  WARMUP_3,
+  defFromTerm,
+  factTF,
+  rateMaker,
+  recallTerm,
+  termFromDef,
+} from "./unit3";
 import {
   EXIT_2,
   PRACTICE_2,
@@ -49,6 +63,9 @@ export const IDEAS: { unit: string; id: string; name: string }[] = [
   { unit: "u2", id: "factors-to-know", name: "Factors to know" },
   { unit: "u2", id: "factor-method", name: "One-step conversions" },
   { unit: "u2", id: "two-step", name: "Two-step conversions" },
+  { unit: "u3", id: "rates", name: "Rate (“per”) conversions" },
+  { unit: "u3", id: "vocab", name: "Vocabulary" },
+  { unit: "u3", id: "facts", name: "SI facts" },
 ];
 
 export const UNITS: Unit[] = [
@@ -132,8 +149,50 @@ export const UNITS: Unit[] = [
     title: "Rates and vocabulary",
     session: "Tue, Oct 6",
     prepares: "the Oct 7 quiz and Learning Checks",
-    ready: false,
-    lessons: [],
+    ready: true,
+    lessons: [
+      { id: "3.0", title: "Warm-up: conversions", kind: "warmup", items: WARMUP_3 },
+      {
+        id: "3.1",
+        title: "“Per” means a fraction",
+        kind: "learn",
+        notes: RATE_NOTES,
+        items: [{ ...rateMaker("rate-guided", { guided: true }), fixed: false }, ...RATE_PRACTICE, rateMaker("rate")],
+      },
+      {
+        id: "3.2",
+        title: "Vocabulary: the SI and its units",
+        kind: "learn",
+        notes: VOCAB_A_NOTES,
+        items: [
+          termFromDef("term-from-def-a", TERMS_A),
+          defFromTerm("def-from-term-a", TERMS_A),
+          recallTerm("recall-term-a", TERMS_A),
+          termFromDef("term-from-def-a", TERMS_A),
+          recallTerm("recall-term-a", TERMS_A),
+          defFromTerm("def-from-term-a", TERMS_A),
+          recallTerm("recall-term-a", TERMS_A),
+        ],
+      },
+      {
+        id: "3.3",
+        title: "Vocabulary: liters, prefixes, shapes",
+        kind: "learn",
+        notes: VOCAB_B_NOTES,
+        items: [
+          termFromDef("term-from-def-b", TERMS_B),
+          recallTerm("recall-term-b", TERMS_B),
+          factTF,
+          defFromTerm("def-from-term-b", TERMS_B),
+          factTF,
+          recallTerm("recall-term-b", TERMS_B),
+          factTF,
+          factTF,
+        ],
+      },
+      { id: "3.4", title: "Vocabulary cards: all 13, twice in a row", kind: "cards", items: CARDS },
+      { id: "3.x", title: "Exit check", kind: "exit", items: EXIT_3 },
+    ],
   },
   {
     id: "u4",

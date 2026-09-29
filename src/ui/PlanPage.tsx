@@ -10,6 +10,7 @@ const KIND: Record<Lesson["kind"], { icon: string; note: string }> = {
   warmup: { icon: "✎", note: "No notes" },
   learn: { icon: "★", note: "" },
   exit: { icon: "◎", note: "No notes" },
+  cards: { icon: "▤", note: "No notes" },
 };
 
 export function PlanPage(props: {

@@ -86,6 +86,10 @@ export function gradeChain(q: ChainQ, factors: Factor[], raw: string): ChainVerd
     if (!cancelsSomething && running.num.includes(f.top.unit)) {
       notes.push(`${k} is upside down: ${f.top.unit} is on top, so it can't cancel the ${f.top.unit} you have. The unit you're getting rid of goes on the bottom.`);
       ok = false;
+    } else if (!cancelsSomething && running.den.includes(f.bottom.unit)) {
+      // A "per" unit sits on the bottom already: cancelling it needs it on top.
+      notes.push(`${k} is upside down: ${f.bottom.unit} is already on the bottom (it's the "per" unit), so a factor cancels it with ${f.bottom.unit} on top.`);
+      ok = false;
     }
     running = cancel(running, [f]);
     factorOk.push(ok);
