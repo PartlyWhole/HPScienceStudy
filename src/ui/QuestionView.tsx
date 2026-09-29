@@ -3,7 +3,7 @@
 import React, { useRef, useState } from "react";
 import type { Cell, Question } from "../content/types";
 import { gradeCell, gradeNumber, gradeText } from "../engine/grade";
-import { formatSci, formatStandard, parseAnswer, preview } from "../lib/answer";
+import { formatAnswer, formatSci, formatStandard, parseAnswer, preview } from "../lib/answer";
 import { type Shown, VerdictBar } from "./VerdictBar";
 import { FigureView } from "./FigureView";
 import { StepsQuestion } from "./Steps";
@@ -60,7 +60,7 @@ function SimpleQuestion(props: Omit<Props, "q"> & { q: Exclude<Question, { kind:
     let answer: string | undefined;
     if (q.kind === "number") {
       ({ ok, note } = gradeNumber(q, entry));
-      answer = (q.form === "sci" ? formatSci(q.answer) : formatStandard(q.answer)) + (q.unit ? " " + q.unit : "");
+      answer = (q.form === "sci" ? formatSci(q.answer) : formatAnswer(q.answer)) + (q.unit ? " " + q.unit : "");
     } else if (q.kind === "text") {
       ok = gradeText(q.accept, entry, q.caseSensitive);
       answer = q.accept[0];

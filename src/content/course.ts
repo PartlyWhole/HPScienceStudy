@@ -6,6 +6,18 @@ import type { Unit } from "./types";
 import { CYLINDER_NOTES, PREFIX_NOTES, SCI_READ_NOTES, SCI_WRITE_NOTES, TRAP_NOTES } from "./notes1";
 import { FACTOR_NOTES, FACTS_NOTES, METHOD_NOTES, TWO_STEP_NOTES } from "./notes2";
 import { FACT_NOTES, RATE_NOTES, VOCAB_NOTES } from "./notes3";
+import { BOX_NOTES, CYLINDER_NOTES_4, L_NOTES, PERCENT_NOTES, SAME_UNIT_NOTES } from "./notes4";
+import {
+  EXIT_4,
+  PRACTICE_4,
+  WARMUP_4,
+  boxMaker,
+  cylinderMaker,
+  lShapeMaker,
+  mixedUnitsMaker,
+  percentMaker,
+  volumeUnitsMaker,
+} from "./unit4";
 import {
   CARD_SETS,
   EXIT_3,
@@ -64,6 +76,12 @@ export const IDEAS: { unit: string; id: string; name: string }[] = [
   { unit: "u3", id: "rates", name: "Rate (“per”) conversions" },
   { unit: "u3", id: "vocab", name: "Vocabulary" },
   { unit: "u3", id: "facts", name: "SI facts" },
+  { unit: "u4", id: "box-volume", name: "Boxes" },
+  { unit: "u4", id: "cylinder-volume", name: "Cylinders" },
+  { unit: "u4", id: "volume-units", name: "cm³, mL, L and m³" },
+  { unit: "u4", id: "same-units", name: "Lengths in one unit" },
+  { unit: "u4", id: "l-shape", name: "L-shapes" },
+  { unit: "u4", id: "percent-diff", name: "Percent difference" },
 ];
 
 export const UNITS: Unit[] = [
@@ -167,8 +185,16 @@ export const UNITS: Unit[] = [
     title: "Volume",
     session: "Sun, Oct 11",
     prepares: "the Oct 12 volume quiz",
-    ready: false,
-    lessons: [],
+    ready: true,
+    lessons: [
+      { id: "4.0", title: "Warm-up: cards and a rate", kind: "warmup", items: WARMUP_4 },
+      { id: "4.1", title: "Boxes", kind: "learn", notes: BOX_NOTES, items: [PRACTICE_4[0], PRACTICE_4[1], PRACTICE_4[4], PRACTICE_4[6], boxMaker, volumeUnitsMaker] },
+      { id: "4.2", title: "Cylinders", kind: "learn", notes: CYLINDER_NOTES_4, items: [PRACTICE_4[2], PRACTICE_4[3], cylinderMaker, cylinderMaker] },
+      { id: "4.3", title: "Every length in one unit", kind: "learn", notes: SAME_UNIT_NOTES, items: [PRACTICE_4[5], mixedUnitsMaker, mixedUnitsMaker] },
+      { id: "4.4", title: "L-shapes", kind: "learn", notes: L_NOTES, items: [PRACTICE_4[7], lShapeMaker, lShapeMaker] },
+      { id: "4.5", title: "Displacement and percent difference", kind: "learn", notes: PERCENT_NOTES, items: [PRACTICE_4[8], percentMaker, displacement] },
+      { id: "4.x", title: "Exit check", kind: "exit", items: EXIT_4 },
+    ],
   },
   {
     id: "u5",

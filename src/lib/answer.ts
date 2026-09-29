@@ -110,3 +110,17 @@ export function preview(raw: string): string | null {
   if (p.form === "fraction") return normalize(raw).replace("/", " ⁄ ");
   return formatStandard(p.value);
 }
+
+/**
+ * An answer as it would be written on paper: exact when it is short (2,400,
+ * 0.85), otherwise rounded — a tenth for big numbers (417.4), three figures
+ * for small ones (0.417) — rather than every digit π gives.
+ */
+export function formatAnswer(v: number): string {
+  const exact = formatStandard(v);
+  if (exact.replace(/[^0-9]/g, "").replace(/^0+/, "").length <= 6) return exact;
+  const a = Math.abs(v);
+  if (a >= 100) return formatStandard(Number(v.toFixed(1)));
+  if (a >= 1) return formatStandard(Number(v.toFixed(2)));
+  return formatStandard(Number(v.toPrecision(3)));
+}

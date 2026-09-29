@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import type { Question } from "../content/types";
 import { type Verdict, gradePart } from "../engine/grade";
-import { formatStandard, parseAnswer } from "../lib/answer";
+import { formatAnswer, formatStandard, parseAnswer } from "../lib/answer";
 import { FigureView } from "./FigureView";
 import { VerdictBar } from "./VerdictBar";
 
@@ -51,7 +51,7 @@ export function StepsQuestion(props: { q: StepsQ; onAnswered: (ok: boolean) => v
             </label>
             {verdicts && !verdicts[i].ok && (
               <span className="part-note">
-                {verdicts[i].note ? verdicts[i].note + " " : ""}It's {formatStandard(p.answer)}{p.unit ? " " + p.unit : ""}.
+                {verdicts[i].note ? verdicts[i].note + " " : ""}{formatAnswer(p.answer) === formatStandard(p.answer) ? "It's " : "It's about "}{formatAnswer(p.answer)}{p.unit ? " " + p.unit : ""}.
               </span>
             )}
           </li>

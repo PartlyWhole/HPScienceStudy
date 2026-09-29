@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import type { Question } from "../content/types";
 import { type Factor, cancel, unitText, unitsLike } from "../content/units";
 import { gradeChain } from "../engine/grade";
-import { formatStandard, parseAnswer, preview } from "../lib/answer";
+import { formatAnswer, formatStandard, parseAnswer, preview } from "../lib/answer";
 import { VerdictBar } from "./VerdictBar";
 
 type ChainQ = Extract<Question, { kind: "chain" }>;
@@ -199,7 +199,7 @@ export function ChainQuestion(props: { q: ChainQ; onAnswered: (ok: boolean) => v
       {verdict && !verdict.ok && (
         <div className="chain-worked">
           <span className="muted">One correct setup:</span>
-          <ChainDisplay n={q.given.n} units={q.given.units} factors={q.solution} result={formatStandard(q.answer) + " " + unitText(q.target)} />
+          <ChainDisplay n={q.given.n} units={q.given.units} factors={q.solution} result={formatAnswer(q.answer) + " " + unitText(q.target)} />
         </div>
       )}
 
@@ -208,7 +208,7 @@ export function ChainQuestion(props: { q: ChainQ; onAnswered: (ok: boolean) => v
           verdict && {
             ok: verdict.ok,
             note: verdict.notes[0],
-            answer: formatStandard(q.answer) + " " + unitText(q.target),
+            answer: formatAnswer(q.answer) + " " + unitText(q.target),
             why: [...verdict.notes.slice(1), q.why].join(" "),
           }
         }

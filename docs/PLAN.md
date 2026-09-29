@@ -61,7 +61,7 @@ Rules the site keeps, from walking through it as a first-time 13-year-old:
 | Graduated cylinder | Built | A drawn close-up. Lines are worth 0.2–5 mL, and the water climbs the glass. Covers reading the level and displacement. |
 | Conversion-factor builder | Built | The chain is built from unit tiles on horizontal fraction bars, with units cancelling on screen. An upside-down factor is caught and explained. Then the number. |
 | Vocabulary recall | Built | Term → the student writes a definition, then checks it against the key words. Matching and multiple choice too. |
-| Volume | Unit 4 | Boxes, cylinders (diameter given, radius needed), L-shapes, units cubed, percent difference. |
+| Volume | Built | Boxes, cylinders (diameter given, radius needed), L-shapes, units cubed, percent difference. |
 | Timed practice test | Unit 5 | The plan's 19 questions in 30 minutes. Each miss is labelled with the plan's five mistake types and gets a fresh problem of the same kind. |
 | 3×5 study card | Unit 5 | Built with the student, as the plan suggests. |
 
@@ -80,6 +80,12 @@ Each fault gets its own note, and a worked setup is shown after a miss. Guided q
 - **Matching and multiple choice.** Both run both ways (term from definition, definition from term), and the facts are true-or-false questions.
 - **The cards drill** is the plan's routine: every one of the 13 cards right twice in a row. A missed card returns three cards later.
 
+**Unit 4, as built.**
+
+- Boxes, cylinders and L-shaped blocks are drawn to their numbers, and each question is worked in steps: r first, then V, then liters. Each step is marked on its own.
+- The plan's slips are named where they happen: the diameter used as the radius, a radius not squared, liters multiplied instead of divided, inches left unconverted, the box around an L, and a percent difference divided by the wrong volume.
+- Answers from π are accepted to a sensible rounding and shown rounded ("about 417.4 cm³").
+
 **Endless practice (built).** He chooses ideas and questions keep coming, weighted toward the weakest and most overdue ideas. It never repeats the maker just used, a miss comes back three questions later, and only generators take part.
 
 ## Open questions (for the teacher)
@@ -93,4 +99,4 @@ The site uses safe defaults until these are answered:
 
 ## Status
 
-Units 1–3 and endless practice are built. Units 4 and 5 are shown on the plan with their session dates, and each will be added before its session.
+Units 1–4 and endless practice are built. Unit 5 is shown on the plan with its session date, and will be added before it.
