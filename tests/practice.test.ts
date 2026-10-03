@@ -50,7 +50,8 @@ describe("lesson size and retries", () => {
   });
 });
 
-import { linkedIdeas } from "../src/ui/Practice";
+import { linkedIdeas, linkedPractice } from "../src/ui/Practice";
+import { recapFor } from "../src/content/course";
 
 describe("practice links", () => {
   it("reads the ideas a link asks for, and ignores ones that don't exist", () => {
@@ -58,5 +59,13 @@ describe("practice links", () => {
     expect(linkedIdeas("#practice=rates,nonsense")).toEqual(["rates"]);
     expect(linkedIdeas("#practice=nonsense")).toBeNull();
     expect(linkedIdeas("")).toBeNull();
+    expect(linkedPractice("#practice=rates&recap")).toEqual({ ids: ["rates"], recap: true });
+    expect(linkedPractice("#practice=rates")).toEqual({ ids: ["rates"], recap: false });
+  });
+
+  it("has recap notes for every idea, each card once", () => {
+    for (const idea of IDEAS) expect(recapFor([idea.id]).length, idea.id).toBeGreaterThan(0);
+    const all = recapFor(IDEAS.map((i) => i.id));
+    expect(new Set(all).size).toBe(all.length);
   });
 });

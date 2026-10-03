@@ -318,3 +318,7 @@ code { font-size: 0.95em; background: var(--accent-soft); padding: 1px 5px; bord
 .share-link { font: inherit; font-size: 14px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); }
 .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .practice-start .link { margin-left: auto; }
+
+/* Recap before practice */
+.recap-toggle { display: flex; gap: 10px; align-items: flex-start; margin-top: 18px; padding: 12px 14px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; cursor: pointer; font-size: 15px; }
+.recap-toggle input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--accent); flex: none; }

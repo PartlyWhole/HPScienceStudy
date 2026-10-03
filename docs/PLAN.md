@@ -99,7 +99,7 @@ Each fault gets its own note, and a worked setup is shown after a miss. Guided q
 - The plan's slips are named where they happen: the diameter used as the radius, a radius not squared, liters multiplied instead of divided, inches left unconverted, the box around an L, and a percent difference divided by the wrong volume.
 - Answers from π are accepted to a sensible rounding and shown rounded ("about 417.4 cm³").
 
-**Endless practice (built).** A "Share link" button makes a link (`…/#practice=rates,two-step`) that opens practice straight on the chosen ideas. He chooses ideas and questions keep coming, weighted toward the weakest and most overdue ideas. It never repeats the maker just used, a miss comes back three questions later, and only generators take part.
+**Endless practice (built).** A "Recap first" option, remembered between visits, opens practice with the notes cards for just the chosen ideas (skippable) before the first question. A "Share link" button makes a link (`…/#practice=rates,two-step`) that opens practice straight on the chosen ideas, with `&recap` when the recap is on. He chooses ideas and questions keep coming, weighted toward the weakest and most overdue ideas. It never repeats the maker just used, a miss comes back three questions later, and only generators take part.
 
 ## Open questions (for the teacher)
 

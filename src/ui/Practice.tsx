@@ -1,6 +1,7 @@
 // Endless practice: choose ideas, then answer until you stop.
 import React, { useMemo, useRef, useState } from "react";
-import { IDEAS } from "../content/course";
+import { IDEAS, recapFor } from "../content/course";
+import { NotesView } from "./LessonPlayer";
 import type { Question, Unit } from "../content/types";
 import { isDue, nextMaker, practiceMakers } from "../engine/practice";
 import type { Progress } from "../engine/progress";
@@ -29,23 +30,42 @@ const saveChosen = (ids: string[]) => {
  * send ("practise rates and two-step conversions tonight"). It lives after
  * the #, so the site needs no server to read it.
  */
-export function practiceLink(ids: string[]): string {
-  return location.origin + location.pathname + "#practice=" + ids.map(encodeURIComponent).join(",");
+export function practiceLink(ids: string[], recap = false): string {
+  return location.origin + location.pathname + "#practice=" + ids.map(encodeURIComponent).join(",") + (recap ? "&recap" : "");
 }
 
-/** The ideas a link asks for, keeping only ones that exist. */
-export function linkedIdeas(hash: string): string[] | null {
-  const m = hash.match(/^#practice=(.+)$/);
+/** What a link asks for — its ideas, keeping only ones that exist, and whether to recap first. */
+export function linkedPractice(hash: string): { ids: string[]; recap: boolean } | null {
+  const m = hash.match(/^#practice=([^&]+)(&recap)?$/);
   if (!m) return null;
   const known = new Set(IDEAS.map((i) => i.id));
   const ids = m[1].split(",").map(decodeURIComponent).filter((id) => known.has(id));
-  return ids.length ? ids : null;
+  return ids.length ? { ids, recap: !!m[2] } : null;
 }
+
+export const linkedIdeas = (hash: string) => linkedPractice(hash)?.ids ?? null;
+
+const RECAP_KEY = "hpss-practice-recap";
+const loadRecap = () => {
+  try {
+    return localStorage.getItem(RECAP_KEY) !== "off";
+  } catch {
+    return true;
+  }
+};
+const saveRecap = (on: boolean) => {
+  try {
+    localStorage.setItem(RECAP_KEY, on ? "on" : "off");
+  } catch {
+    // Not remembered; no harm.
+  }
+};
 
 /** The link, ready to copy or send, with what it will practise. */
 function ShareBox(props: { link: string; onClose: () => void }) {
   const [copied, setCopied] = useState(false);
-  const ids = linkedIdeas(new URL(props.link).hash) ?? [];
+  const linked = linkedPractice(new URL(props.link).hash);
+  const ids = linked?.ids ?? [];
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(props.link);
@@ -58,7 +78,9 @@ function ShareBox(props: { link: string; onClose: () => void }) {
   return (
     <div className="share-box" role="dialog" aria-label="Share this practice">
       <strong>A link to this practice</strong>
-      <p className="muted">Opening it starts endless practice on: {ids.map((id) => IDEAS.find((i) => i.id === id)?.name).join(", ")}.</p>
+      <p className="muted">
+        Opening it starts endless practice{linked?.recap ? ", after a quick recap," : ""} on: {ids.map((id) => IDEAS.find((i) => i.id === id)?.name).join(", ")}.
+      </p>
       <input className="share-link" readOnly value={props.link} onFocus={(e) => e.target.select()} aria-label="Practice link" />
       <div className="row">
         <button className="primary" onClick={copy}>{copied ? "Copied" : "Copy link"}</button>
@@ -77,7 +99,7 @@ function Strength(props: { s: number }) {
   );
 }
 
-export function PracticeSetup(props: { units: Unit[]; progress: Progress; onStart: (ids: string[]) => void; onBack: () => void }) {
+export function PracticeSetup(props: { units: Unit[]; progress: Progress; onStart: (ids: string[], recap: boolean) => void; onBack: () => void }) {
   const { progress: p } = props;
   const ready = new Set(props.units.filter((u) => u.ready).map((u) => u.id));
   const ideas = IDEAS.filter((i) => ready.has(i.unit));
@@ -88,6 +110,8 @@ export function PracticeSetup(props: { units: Unit[]; progress: Progress; onStar
   });
   const makers = practiceMakers(props.units, chosen);
   const [link, setLink] = useState<string | null>(null);
+  const [recap, setRecap] = useState(loadRecap);
+  const cards = recapFor([...chosen]).length;
   const toggle = (id: string) =>
     setChosen((s) => {
       const next = new Set(s);
@@ -122,9 +146,26 @@ export function PracticeSetup(props: { units: Unit[]; progress: Progress; onStar
           </div>
         </section>
       ))}
+      <label className="recap-toggle">
+        <input
+          type="checkbox"
+          checked={recap}
+          onChange={(e) => {
+            setRecap(e.target.checked);
+            saveRecap(e.target.checked);
+          }}
+        />
+        <span>
+          <b>Recap first</b>
+          <span className="muted">
+            {" "}— a quick look at the notes for {chosen.size === 1 ? "this idea" : "these ideas"}
+            {cards ? ` (${cards} card${cards === 1 ? "" : "s"})` : ""} before the questions start.
+          </span>
+        </span>
+      </label>
       <div className="practice-start">
         <span className="muted">{chosen.size ? chosen.size + " chosen" : "Choose at least one idea."}</span>
-        <button className="link" disabled={!makers.length} onClick={() => setLink(practiceLink([...chosen]))}>
+        <button className="link" disabled={!makers.length} onClick={() => setLink(practiceLink([...chosen], recap))}>
           Share link
         </button>
         <button
@@ -132,7 +173,7 @@ export function PracticeSetup(props: { units: Unit[]; progress: Progress; onStar
           disabled={!makers.length}
           onClick={() => {
             saveChosen([...chosen]);
-            props.onStart([...chosen]);
+            props.onStart([...chosen], recap);
           }}
         >
           Start
@@ -147,6 +188,8 @@ export function PracticePlayer(props: {
   units: Unit[];
   progress: Progress;
   chosen: string[];
+  /** Open with the notes for the chosen ideas, a card at a time, before any question. */
+  recap?: boolean;
   onAnswer: (concepts: string[], ok: boolean) => void;
   onExit: () => void;
 }) {
@@ -171,6 +214,8 @@ export function PracticePlayer(props: {
   const [view, setView] = useState(0);
   const [reached, setReached] = useState(0);
   const [summary, setSummary] = useState(false);
+  const recapNotes = useMemo(() => recapFor(props.chosen), [props.chosen]);
+  const [reading, setReading] = useState(!!props.recap && recapNotes.length > 0);
 
   const answered = (i: number, ok: boolean) => {
     results.current[i] = ok;
@@ -184,6 +229,17 @@ export function PracticePlayer(props: {
   };
   const done = shown.filter((x) => x !== undefined).length;
   const right = shown.filter(Boolean).length;
+
+  if (reading)
+    return (
+      <div className="page lesson">
+        <div className="lesson-top">
+          <button className="icon" onClick={props.onExit} aria-label="Stop practising">×</button>
+          <span className="practice-tally">Recap before practice</span>
+        </div>
+        <NotesView notes={recapNotes} doneLabel="Start practising" onDone={() => setReading(false)} onSkip={() => setReading(false)} />
+      </div>
+    );
 
   if (summary)
     return (

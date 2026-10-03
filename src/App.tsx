@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { UNITS } from "./content/course";
 import type { Lesson, Maker, Unit } from "./content/types";
 import { type Progress, finishLesson, loadProgress, recordAnswer, saveProgress } from "./engine/progress";
-import { PracticePlayer, PracticeSetup, linkedIdeas } from "./ui/Practice";
+import { PracticePlayer, PracticeSetup, linkedPractice } from "./ui/Practice";
 import { makerIndex } from "./engine/session";
 import { LessonPlayer, NotesView } from "./ui/LessonPlayer";
 import { PlanPage } from "./ui/PlanPage";
@@ -14,19 +14,19 @@ type Screen =
   | { kind: "lesson"; unit: Unit; lesson: Lesson }
   | { kind: "notes"; unit: Unit }
   | { kind: "practice-setup" }
-  | { kind: "practice"; chosen: string[] };
+  | { kind: "practice"; chosen: string[]; recap?: boolean };
 
 export function App() {
   const [p, setP] = useState<Progress>(loadProgress);
   // A shared practice link opens straight into that practice.
   const [screen, setScreen] = useState<Screen>(() => {
-    const ids = linkedIdeas(location.hash);
-    return ids ? { kind: "practice", chosen: ids } : { kind: "plan" };
+    const linked = linkedPractice(location.hash);
+    return linked ? { kind: "practice", chosen: linked.ids, recap: linked.recap } : { kind: "plan" };
   });
   useEffect(() => {
     const onHash = () => {
-      const ids = linkedIdeas(location.hash);
-      if (ids) setScreen({ kind: "practice", chosen: ids });
+      const linked = linkedPractice(location.hash);
+      if (linked) setScreen({ kind: "practice", chosen: linked.ids, recap: linked.recap });
     };
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
@@ -78,7 +78,7 @@ export function App() {
         units={UNITS}
         progress={p}
         onBack={() => setScreen({ kind: "plan" })}
-        onStart={(chosen) => setScreen({ kind: "practice", chosen })}
+        onStart={(chosen, recap) => setScreen({ kind: "practice", chosen, recap })}
       />
     );
 
@@ -88,6 +88,7 @@ export function App() {
         units={UNITS}
         progress={p}
         chosen={screen.chosen}
+        recap={screen.recap}
         // Kept as each answer comes in, so stopping part-way loses nothing.
         onAnswer={(concepts, ok) =>
           setP((cur) => {

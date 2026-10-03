@@ -2,7 +2,7 @@
 // graded work it prepares for. A unit is a no-notes warm-up, one or more
 // lessons with notes and practice, and a no-notes exit check — the plan's
 // session pattern. Units after the first are added one ahead of each deadline.
-import type { Unit } from "./types";
+import type { Note, Unit } from "./types";
 import { CYLINDER_NOTES, LADDER_NOTES, PREFIX_NOTES, SCI_READ_NOTES, SCI_WRITE_NOTES } from "./notes1";
 import { FACTOR_NOTES, FACTS_NOTES, METHOD_NOTES, TWO_STEP_NOTES } from "./notes2";
 import { FACT_NOTES, RATE_NOTES, VOCAB_NOTES } from "./notes3";
@@ -83,11 +83,40 @@ export const IDEAS: { unit: string; id: string; name: string }[] = [
   { unit: "u3", id: "facts", name: "SI facts" },
   { unit: "u4", id: "box-volume", name: "Boxes" },
   { unit: "u4", id: "cylinder-volume", name: "Cylinders" },
-  { unit: "u4", id: "volume-units", name: "cm³, mL, L and m³" },
+  { unit: "u4", id: "volume-units", name: "cm³, mL and L" },
   { unit: "u4", id: "same-units", name: "Lengths in one unit" },
   { unit: "u4", id: "l-shape", name: "L-shapes" },
   { unit: "u4", id: "percent-diff", name: "Percent difference" },
 ];
+
+/** The notes that recap each idea before practice: the cards its lesson teaches it with. */
+const RECAP: Record<string, Note[]> = {
+  prefixes: [...PREFIX_NOTES, ...LADDER_NOTES],
+  "sci-write": SCI_WRITE_NOTES,
+  "sci-standard": SCI_READ_NOTES,
+  cylinder: [CYLINDER_NOTES[0]],
+  displacement: [CYLINDER_NOTES[1]],
+  "factor-idea": [FACTOR_NOTES[0]],
+  "factors-to-know": FACTS_NOTES,
+  "factor-method": METHOD_NOTES,
+  "two-step": TWO_STEP_NOTES,
+  rates: RATE_NOTES,
+  vocab: VOCAB_NOTES.flat(),
+  facts: FACT_NOTES,
+  "box-volume": [BOX_NOTES[0]],
+  "cylinder-volume": CYLINDER_NOTES_4,
+  "volume-units": [BOX_NOTES[1]],
+  "same-units": SAME_UNIT_NOTES,
+  "l-shape": L_NOTES,
+  "percent-diff": PERCENT_NOTES,
+};
+
+/** The recap cards for a set of ideas, in course order, each card once. */
+export function recapFor(ids: string[]): Note[] {
+  const out: Note[] = [];
+  for (const idea of IDEAS) if (ids.includes(idea.id)) for (const n of RECAP[idea.id] ?? []) if (!out.includes(n)) out.push(n);
+  return out;
+}
 
 export const UNITS: Unit[] = [
   {
