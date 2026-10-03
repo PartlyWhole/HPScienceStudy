@@ -5,7 +5,7 @@
 import type { Note, Unit } from "./types";
 import { CYLINDER_NOTES, LADDER_NOTES, PREFIX_NOTES, SCI_READ_NOTES, SCI_WRITE_NOTES } from "./notes1";
 import { FACTOR_NOTES, FACTS_NOTES, METHOD_NOTES, TWO_STEP_NOTES } from "./notes2";
-import { FACT_NOTES, RATE_NOTES, VOCAB_NOTES } from "./notes3";
+import { FACT_NOTES, RATE_NOTES, SI_UNITS_NOTES, VOCAB_NOTES } from "./notes3";
 import { BOX_NOTES, CYLINDER_NOTES_4, L_NOTES, PERCENT_NOTES, SAME_UNIT_NOTES } from "./notes4";
 import {
   EXIT_4,
@@ -80,6 +80,7 @@ export const IDEAS: { unit: string; id: string; name: string }[] = [
   { unit: "u2", id: "two-step", name: "Two-step conversions" },
   { unit: "u3", id: "rates", name: "Rate (“per”) conversions" },
   { unit: "u3", id: "vocab", name: "Vocabulary" },
+  { unit: "u3", id: "si-units", name: "SI base units" },
   { unit: "u3", id: "facts", name: "SI facts" },
   { unit: "u4", id: "box-volume", name: "Boxes" },
   { unit: "u4", id: "cylinder-volume", name: "Cylinders" },
@@ -96,12 +97,13 @@ const RECAP: Record<string, Note[]> = {
   "sci-standard": SCI_READ_NOTES,
   cylinder: [CYLINDER_NOTES[0]],
   displacement: [CYLINDER_NOTES[1]],
-  "factor-idea": [FACTOR_NOTES[0]],
+  "factor-idea": FACTOR_NOTES,
   "factors-to-know": FACTS_NOTES,
   "factor-method": METHOD_NOTES,
   "two-step": TWO_STEP_NOTES,
   rates: RATE_NOTES,
   vocab: VOCAB_NOTES.flat(),
+  "si-units": SI_UNITS_NOTES,
   facts: FACT_NOTES,
   "box-volume": [BOX_NOTES[0]],
   "cylinder-volume": CYLINDER_NOTES_4,
@@ -205,7 +207,7 @@ export const UNITS: Unit[] = [
         id: "3." + (k + 3),
         title: "Vocabulary: " + ["units and systems", "meter, kilogram, second, liter", "prefixes, factors, shapes"][k],
         kind: "learn" as const,
-        notes: k === 2 ? [...VOCAB_NOTES[k], ...FACT_NOTES] : VOCAB_NOTES[k],
+        notes: k === 2 ? [...VOCAB_NOTES[k], ...FACT_NOTES] : k === 0 ? [...VOCAB_NOTES[k], ...SI_UNITS_NOTES] : VOCAB_NOTES[k],
         items: [
           termFromDef("term-from-def-" + k, terms),
           recallTerm("recall-term-" + k, terms),

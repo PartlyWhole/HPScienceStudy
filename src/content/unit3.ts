@@ -195,7 +195,7 @@ export const factTF: Maker = {
 
 
 /** The SI sheet's seven base units: each quantity's unit and symbol, from memory. */
-export const baseUnitsTable: Maker = fixed("si-base-units", ["vocab"], {
+export const baseUnitsTable: Maker = fixed("si-base-units", ["si-units"], {
   kind: "table",
   prompt: "The seven SI base units: write each one's name and symbol.",
   context: ["Leave a box blank if you don't know it yet."],
@@ -211,7 +211,7 @@ export const baseUnitsTable: Maker = fixed("si-base-units", ["vocab"], {
 /** "What is the SI base unit of time?" or "What does the symbol K stand for?" */
 export const baseUnitQuestion: Maker = {
   id: "si-base-unit",
-  concepts: ["vocab"],
+  concepts: ["si-units"],
   make(r) {
     const b = pick(r, BASE_UNITS);
     return r() < 0.6

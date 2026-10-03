@@ -3,7 +3,7 @@ import React from "react";
 import { ChainDisplay } from "../ui/Chain";
 import type { Note } from "./types";
 import { stepFactor } from "./unit2";
-import { FACTS, type Term } from "./vocab";
+import { BASE_UNITS, FACTS, type Term } from "./vocab";
 import { TERM_SETS } from "./unit3";
 
 export const RATE_NOTES: Note[] = [
@@ -63,6 +63,35 @@ export const FACT_NOTES: Note[] = [
         ))}
         <li>Mass is measured in kg; weight is a force, measured in newtons or pounds.</li>
       </ul>
+    ),
+  },
+];
+
+/** The SI sheet's base units, and a few of the derived units built from them. */
+export const SI_UNITS_NOTES: Note[] = [
+  {
+    title: "The seven SI base units",
+    body: (
+      <>
+        <table className="notes-table">
+          <thead>
+            <tr><th>Quantity</th><th>Unit</th><th>Symbol</th></tr>
+          </thead>
+          <tbody>
+            {BASE_UNITS.map((b) => (
+              <tr key={b.unit}>
+                <td>{b.quantity}</td>
+                <td>{b.unit}</td>
+                <td className="symbol">{b.symbol}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p>
+          Every other unit is <b>derived</b> from these: the newton (force), the joule (energy), the pascal (pressure), the hertz
+          (frequency).
+        </p>
+      </>
     ),
   },
 ];
