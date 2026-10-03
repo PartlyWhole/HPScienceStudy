@@ -49,3 +49,14 @@ describe("lesson size and retries", () => {
     expect(again.prompt).not.toBe(slot.q.prompt);
   });
 });
+
+import { linkedIdeas } from "../src/ui/Practice";
+
+describe("practice links", () => {
+  it("reads the ideas a link asks for, and ignores ones that don't exist", () => {
+    expect(linkedIdeas("#practice=rates,two-step")).toEqual(["rates", "two-step"]);
+    expect(linkedIdeas("#practice=rates,nonsense")).toEqual(["rates"]);
+    expect(linkedIdeas("#practice=nonsense")).toBeNull();
+    expect(linkedIdeas("")).toBeNull();
+  });
+});

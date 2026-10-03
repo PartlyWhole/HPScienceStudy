@@ -3,7 +3,7 @@
 // lessons with notes and practice, and a no-notes exit check — the plan's
 // session pattern. Units after the first are added one ahead of each deadline.
 import type { Unit } from "./types";
-import { CYLINDER_NOTES, PREFIX_NOTES, SCI_READ_NOTES, SCI_WRITE_NOTES, TRAP_NOTES } from "./notes1";
+import { CYLINDER_NOTES, LADDER_NOTES, PREFIX_NOTES, SCI_READ_NOTES, SCI_WRITE_NOTES } from "./notes1";
 import { FACTOR_NOTES, FACTS_NOTES, METHOD_NOTES, TWO_STEP_NOTES } from "./notes2";
 import { FACT_NOTES, RATE_NOTES, VOCAB_NOTES } from "./notes3";
 import { BOX_NOTES, CYLINDER_NOTES_4, L_NOTES, PERCENT_NOTES, SAME_UNIT_NOTES } from "./notes4";
@@ -20,6 +20,8 @@ import {
 } from "./unit4";
 import {
   CARD_SETS,
+  baseUnitQuestion,
+  baseUnitsTable,
   EXIT_3,
   RATE_PRACTICE,
   TERM_SETS,
@@ -48,7 +50,11 @@ import {
   PRACTICE_A,
   PRACTICE_B,
   displacement,
+  ladderSteps,
+  ladderWord,
   lineValue,
+  moveDecimal,
+  prefixMeaning,
   prefixFill,
   prefixName,
   prefixSymbol,
@@ -63,8 +69,7 @@ export const COURSE_TITLE = "Chapter 8: Measurement and Units";
 
 /** The ideas practised, by unit, as endless practice lists them. */
 export const IDEAS: { unit: string; id: string; name: string }[] = [
-  { unit: "u1", id: "prefixes", name: "Metric prefixes" },
-  { unit: "u1", id: "prefix-traps", name: "Prefix traps (M or m?)" },
+  { unit: "u1", id: "prefixes", name: "The metric ladder" },
   { unit: "u1", id: "sci-write", name: "Writing scientific notation" },
   { unit: "u1", id: "sci-standard", name: "Reading scientific notation" },
   { unit: "u1", id: "cylinder", name: "Reading a cylinder" },
@@ -88,16 +93,22 @@ export const UNITS: Unit[] = [
   {
     id: "u1",
     n: 1,
-    title: "Prefixes, scientific notation, cylinders",
+    title: "The metric ladder, scientific notation, cylinders",
     session: "Wed, Sep 30",
     prepares: "Sep 30 classwork and the Oct 1 Rainbow Lab",
     ready: true,
     lessons: [
-      { id: "1.0", title: "Warm-up: the prefixes", kind: "warmup", items: [prefixTable] },
-      { id: "1.1", title: "The five prefixes", kind: "learn", notes: PREFIX_NOTES, items: [...PRACTICE_A.slice(0, 5), prefixName, prefixSymbol] },
-      { id: "1.2", title: "Prefix traps", kind: "learn", notes: TRAP_NOTES, items: [...PRACTICE_A.slice(5), prefixSymbol, prefixFill, prefixFill] },
+      { id: "1.0", title: "Warm-up: King Henry", kind: "warmup", items: [prefixTable] },
+      { id: "1.1", title: "The metric ladder", kind: "learn", notes: PREFIX_NOTES, items: [ladderWord, prefixName, prefixSymbol, prefixMeaning, ladderWord, prefixSymbol] },
+      {
+        id: "1.2",
+        title: "Moving the decimal",
+        kind: "learn",
+        notes: LADDER_NOTES,
+        items: [ladderSteps, PRACTICE_A[0], PRACTICE_A[1], PRACTICE_A[2], prefixFill, ladderSteps, prefixFill, PRACTICE_A[5]],
+      },
       { id: "1.3", title: "Reading scientific notation", kind: "learn", notes: SCI_READ_NOTES, items: [...PRACTICE_B.slice(0, 4), sciSense, toStandard] },
-      { id: "1.4", title: "Writing scientific notation", kind: "learn", notes: SCI_WRITE_NOTES, items: [...PRACTICE_B.slice(4), toSci, toSci] },
+      { id: "1.4", title: "Writing scientific notation", kind: "learn", notes: SCI_WRITE_NOTES, items: [moveDecimal, moveDecimal, ...PRACTICE_B.slice(4), toSci] },
       {
         id: "1.5",
         title: "Reading a graduated cylinder",
@@ -171,6 +182,7 @@ export const UNITS: Unit[] = [
           recallTerm("recall-term-" + k, terms),
           defFromTerm("def-from-term-" + k, terms),
           recallTerm("recall-term-" + k, terms),
+          ...(k === 0 ? [baseUnitsTable, baseUnitQuestion] : []),
           ...(k === 2 ? [factTF, factTF] : []),
         ],
       })),

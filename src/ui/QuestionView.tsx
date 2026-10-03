@@ -7,6 +7,7 @@ import { formatAnswer, formatSci, formatStandard, parseAnswer, preview } from ".
 import { type Shown, VerdictBar } from "./VerdictBar";
 import { FigureView } from "./FigureView";
 import { StepsQuestion } from "./Steps";
+import { DecimalQuestion, SciEntry } from "./Decimal";
 import { ChainQuestion } from "./Chain";
 import { RecallQuestion } from "./Recall";
 
@@ -21,10 +22,11 @@ export function QuestionView(props: Props) {
   if (props.q.kind === "chain") return <ChainQuestion q={props.q} onAnswered={props.onAnswered} onContinue={props.onContinue} />;
   if (props.q.kind === "recall") return <RecallQuestion q={props.q} onAnswered={props.onAnswered} onContinue={props.onContinue} />;
   if (props.q.kind === "steps") return <StepsQuestion q={props.q} onAnswered={props.onAnswered} onContinue={props.onContinue} />;
+  if (props.q.kind === "decimal") return <DecimalQuestion q={props.q} onAnswered={props.onAnswered} onContinue={props.onContinue} />;
   return <SimpleQuestion {...props} q={props.q} />;
 }
 
-function SimpleQuestion(props: Omit<Props, "q"> & { q: Exclude<Question, { kind: "chain" | "recall" | "steps" }> }) {
+function SimpleQuestion(props: Omit<Props, "q"> & { q: Exclude<Question, { kind: "chain" | "recall" | "steps" | "decimal" }> }) {
   const { q } = props;
   const [entry, setEntry] = useState("");
   const [choice, setChoice] = useState<number | null>(null);
@@ -79,7 +81,12 @@ function SimpleQuestion(props: Omit<Props, "q"> & { q: Exclude<Question, { kind:
 
       {"figure" in q && q.figure && <FigureView figure={q.figure} />}
 
-      {q.kind === "number" && <NumberEntry value={entry} onChange={setEntry} unit={q.unit} disabled={done} onEnter={check} form={q.form} />}
+      {q.kind === "number" &&
+        (q.form === "sci" ? (
+          <SciEntry onChange={setEntry} disabled={done} onEnter={check} />
+        ) : (
+          <NumberEntry value={entry} onChange={setEntry} unit={q.unit} disabled={done} onEnter={check} form={q.form} />
+        ))}
       {q.kind === "text" && <TextEntry value={entry} onChange={setEntry} disabled={done} onEnter={check} />}
       {q.kind === "choice" && (
         <div className="choices">
@@ -222,9 +229,6 @@ function FillTable(props: {
           </tr>
         ))}
       </tbody>
-      {props.rows.some((r) => r.some((c) => "text" in c && c.text.includes("µ"))) && (
-        <caption className="fill-tip">Tip: type u for µ.</caption>
-      )}
     </table>
   );
 }

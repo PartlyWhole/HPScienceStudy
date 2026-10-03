@@ -290,3 +290,31 @@ code { font-size: 0.95em; background: var(--accent-soft); padding: 1px 5px; bord
 .practice-card { margin-top: 22px; }
 
 .notes-figure { display: flex; justify-content: center; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 8px; margin-bottom: 10px; }
+
+/* Scientific notation by hand */
+.sci-steps { margin: 0; padding: 10px 12px 10px 30px; font-size: 14.5px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; display: flex; flex-direction: column; gap: 2px; }
+.mover { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 14px 8px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; }
+.mover-digits { display: flex; align-items: flex-end; flex-wrap: wrap; justify-content: center; }
+.digit { font-size: 30px; font-weight: 600; font-variant-numeric: tabular-nums; min-width: 0.65em; text-align: center; line-height: 1.2; }
+.digit.first { color: var(--ok); text-decoration: underline; text-underline-offset: 6px; }
+.mover .gap { min-width: 14px; width: 14px; min-height: 40px; padding: 0; border: 0; background: none; font-size: 34px; font-weight: 800; color: var(--accent); line-height: 1; border-radius: 4px; }
+.mover .gap:not(.on):hover:not(:disabled) { background: var(--accent-soft); }
+.mover .gap.on { width: 18px; }
+.mover .gap { display: inline-flex; align-items: flex-end; justify-content: center; padding-bottom: 7px; }
+.pt { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.mover-controls { display: flex; align-items: center; gap: 12px; }
+.mover-controls button { min-width: 48px; font-size: 18px; }
+.mover-count { font-size: 14.5px; font-weight: 600; color: var(--muted); min-width: 12em; text-align: center; }
+.sci-answer { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 6px; font-size: 24px; font-weight: 600; }
+.sci-mantissa { padding-top: 6px; }
+.sci-times { padding-top: 6px; }
+.sci-coef { width: 6em; font: inherit; font-size: 22px; padding: 6px 10px; background: var(--card); color: var(--ink); border: 1px solid var(--line); border-radius: 10px; }
+.sci-exp { width: 3.2em; font: inherit; font-size: 16px; padding: 3px 6px; margin-top: -6px; background: var(--card); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; text-align: center; }
+.sci-answer .chip { align-self: center; }
+
+/* Sharing a practice */
+.share-box { position: sticky; bottom: 76px; margin-top: 12px; display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; background: var(--card); border: 1px solid var(--accent); border-radius: 14px; box-shadow: 0 8px 24px #1d243322; }
+.share-box p { margin: 0; font-size: 14px; }
+.share-link { font: inherit; font-size: 14px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.practice-start .link { margin-left: auto; }

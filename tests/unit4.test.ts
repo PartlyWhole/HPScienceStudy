@@ -32,7 +32,7 @@ describe("unit 4: volume", () => {
 
   it("keeps the plan's answer key", () => {
     const got = PRACTICE_4.map((m) => answers(m.make(rng(1))));
-    const want = [[1920, 1.92], [125], [282.7], [3.3, 417.4, 0.4174], [63000, 63], [1.27, 0.635, 8.89, 11.3], [2.4, 2400], [18, 54], [8.5, 3.5]];
+    const want = [[1920, 1.92], [125], [282.7], [3.3, 417.4, 0.4174], [63000, 63], [1.27, 0.635, 8.89, 11.3], [2_400_000, 2400], [18, 54], [8.5, 3.5]];
     want.forEach((w, i) => w.forEach((v, k) => expect(Math.abs(got[i][k] - v) <= Math.abs(v) * 0.02, `practice ${i + 1} part ${k + 1}: ${got[i][k]} vs ${v}`).toBe(true)));
     const exit = EXIT_4.map((m) => m.make(rng(1)));
     expect(answers(exit[0]).map((v) => Math.round(v * 10) / 10)).toEqual([5, 314.2]);

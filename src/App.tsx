@@ -1,9 +1,9 @@
 // The whole app: the plan, a lesson in progress, or a unit's notes.
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { UNITS } from "./content/course";
 import type { Lesson, Maker, Unit } from "./content/types";
 import { type Progress, finishLesson, loadProgress, recordAnswer, saveProgress } from "./engine/progress";
-import { PracticePlayer, PracticeSetup } from "./ui/Practice";
+import { PracticePlayer, PracticeSetup, linkedIdeas } from "./ui/Practice";
 import { makerIndex } from "./engine/session";
 import { LessonPlayer, NotesView } from "./ui/LessonPlayer";
 import { PlanPage } from "./ui/PlanPage";
@@ -18,7 +18,24 @@ type Screen =
 
 export function App() {
   const [p, setP] = useState<Progress>(loadProgress);
-  const [screen, setScreen] = useState<Screen>({ kind: "plan" });
+  // A shared practice link opens straight into that practice.
+  const [screen, setScreen] = useState<Screen>(() => {
+    const ids = linkedIdeas(location.hash);
+    return ids ? { kind: "practice", chosen: ids } : { kind: "plan" };
+  });
+  useEffect(() => {
+    const onHash = () => {
+      const ids = linkedIdeas(location.hash);
+      if (ids) setScreen({ kind: "practice", chosen: ids });
+    };
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
+  /** Back to the plan, dropping a practice link from the address so a reload lands on the plan. */
+  const toPlan = () => {
+    if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+    setScreen({ kind: "plan" });
+  };
   const index = useMemo(() => makerIndex(UNITS), []);
 
   const update = (next: Progress) => {
@@ -79,7 +96,7 @@ export function App() {
             return next;
           })
         }
-        onExit={() => setScreen({ kind: "plan" })}
+        onExit={toPlan}
       />
     );
 

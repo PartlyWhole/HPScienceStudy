@@ -24,6 +24,51 @@ const saveChosen = (ids: string[]) => {
   }
 };
 
+/**
+ * A link that opens endless practice straight on these ideas — for a tutor to
+ * send ("practise rates and two-step conversions tonight"). It lives after
+ * the #, so the site needs no server to read it.
+ */
+export function practiceLink(ids: string[]): string {
+  return location.origin + location.pathname + "#practice=" + ids.map(encodeURIComponent).join(",");
+}
+
+/** The ideas a link asks for, keeping only ones that exist. */
+export function linkedIdeas(hash: string): string[] | null {
+  const m = hash.match(/^#practice=(.+)$/);
+  if (!m) return null;
+  const known = new Set(IDEAS.map((i) => i.id));
+  const ids = m[1].split(",").map(decodeURIComponent).filter((id) => known.has(id));
+  return ids.length ? ids : null;
+}
+
+/** The link, ready to copy or send, with what it will practise. */
+function ShareBox(props: { link: string; onClose: () => void }) {
+  const [copied, setCopied] = useState(false);
+  const ids = linkedIdeas(new URL(props.link).hash) ?? [];
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(props.link);
+      setCopied(true);
+    } catch {
+      setCopied(false);
+    }
+  };
+  const share = typeof navigator !== "undefined" && "share" in navigator;
+  return (
+    <div className="share-box" role="dialog" aria-label="Share this practice">
+      <strong>A link to this practice</strong>
+      <p className="muted">Opening it starts endless practice on: {ids.map((id) => IDEAS.find((i) => i.id === id)?.name).join(", ")}.</p>
+      <input className="share-link" readOnly value={props.link} onFocus={(e) => e.target.select()} aria-label="Practice link" />
+      <div className="row">
+        <button className="primary" onClick={copy}>{copied ? "Copied" : "Copy link"}</button>
+        {share && <button onClick={() => navigator.share({ title: "HP Science Study practice", url: props.link }).catch(() => {})}>Send…</button>}
+        <button className="link" onClick={props.onClose}>Close</button>
+      </div>
+    </div>
+  );
+}
+
 function Strength(props: { s: number }) {
   return (
     <span className="strength" aria-label={"strength " + props.s + " of 5"}>
@@ -42,6 +87,7 @@ export function PracticeSetup(props: { units: Unit[]; progress: Progress; onStar
     return new Set(kept.length ? kept : due.length ? due : ideas.map((i) => i.id));
   });
   const makers = practiceMakers(props.units, chosen);
+  const [link, setLink] = useState<string | null>(null);
   const toggle = (id: string) =>
     setChosen((s) => {
       const next = new Set(s);
@@ -78,6 +124,9 @@ export function PracticeSetup(props: { units: Unit[]; progress: Progress; onStar
       ))}
       <div className="practice-start">
         <span className="muted">{chosen.size ? chosen.size + " chosen" : "Choose at least one idea."}</span>
+        <button className="link" disabled={!makers.length} onClick={() => setLink(practiceLink([...chosen]))}>
+          Share link
+        </button>
         <button
           className="primary"
           disabled={!makers.length}
@@ -89,6 +138,7 @@ export function PracticeSetup(props: { units: Unit[]; progress: Progress; onStar
           Start
         </button>
       </div>
+      {link && <ShareBox link={link} onClose={() => setLink(null)} />}
     </div>
   );
 }

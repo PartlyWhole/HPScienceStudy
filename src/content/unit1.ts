@@ -1,25 +1,32 @@
-// Unit 1 (Session 1): the five prefixes, scientific notation, and reading a
-// graduated cylinder. Fixed questions are the plan's own practice and exit
-// check; generators make as many fresh ones as practice needs.
+// Unit 1 (Session 1): the metric ladder, scientific notation, and reading a
+// graduated cylinder. The prefixes follow the class handout — King Henry
+// Doesn't Usually Drink Chocolate Milk — and its rule: each step down the
+// ladder multiplies by 10 (the decimal moves one place right), each step up
+// divides by 10 (one place left). Fixed questions are the plan's own; the
+// generators make as many fresh ones as practice needs.
 import { formatSci, formatStandard } from "../lib/answer";
 import { int, pick, shuffle } from "../lib/rng";
 import type { Cylinder, Maker, Question } from "./types";
 
 // ---------------------------------------------------------------------------
-// The prefixes
+// The metric ladder
 // ---------------------------------------------------------------------------
 
-export type Prefix = { name: string; symbol: string; power: number; means: string };
+export type Rung = { name: string; symbol: string; power: number; word: string; means: string };
 
-export const PREFIXES: Prefix[] = [
-  { name: "mega", symbol: "M", power: 6, means: "1,000,000" },
-  { name: "kilo", symbol: "k", power: 3, means: "1,000" },
-  { name: "centi", symbol: "c", power: -2, means: "1/100" },
-  { name: "milli", symbol: "m", power: -3, means: "1/1,000" },
-  { name: "micro", symbol: "µ", power: -6, means: "1/1,000,000" },
+/** The handout's ladder, biggest first. The base unit is the meter, liter or gram itself. */
+export const LADDER: Rung[] = [
+  { name: "kilo", symbol: "k", power: 3, word: "King", means: "1,000 units" },
+  { name: "hecto", symbol: "h", power: 2, word: "Henry", means: "100 units" },
+  { name: "deca", symbol: "da", power: 1, word: "Doesn't", means: "10 units" },
+  { name: "", symbol: "", power: 0, word: "Usually", means: "the base unit" },
+  { name: "deci", symbol: "d", power: -1, word: "Drink", means: "1/10 of a unit" },
+  { name: "centi", symbol: "c", power: -2, word: "Chocolate", means: "1/100 of a unit" },
+  { name: "milli", symbol: "m", power: -3, word: "Milk", means: "1/1,000 of a unit" },
 ];
 
-const byName = (n: string) => PREFIXES.find((p) => p.name === n)!;
+/** The six prefixes — the ladder without its base unit. */
+export const PREFIXES: Rung[] = LADDER.filter((r) => r.name);
 
 /** 10 to a power, without floating-point tails. */
 export const pow10 = (n: number) => Number(`1e${n}`);
@@ -29,58 +36,56 @@ const times = (n: number, k: number) => Number((n * pow10(k)).toPrecision(12));
 /** A fixed question, made the same way every time. */
 const fixed = (id: string, concepts: string[], q: Question): Maker => ({ id, concepts, make: () => q, fixed: true });
 
-/** Which prefixes the book uses with each unit. */
-const USES: Record<string, string[]> = {
-  m: ["kilo", "centi", "milli", "micro"],
-  g: ["mega", "kilo", "milli", "micro"],
-  L: ["milli", "micro", "centi"],
-  W: ["mega", "kilo", "milli"],
-};
-const UNIT_NAME: Record<string, string> = { m: "meters", g: "grams", L: "liters", W: "watts" };
+const BASES = ["m", "L", "g"];
+const BASE_NAME: Record<string, string> = { m: "meter", L: "liter", g: "gram" };
+const unitOf = (r: Rung, base: string) => r.symbol + base;
+const placesWord = (n: number) => n + " place" + (n === 1 ? "" : "s");
 
-/** Why flipping a prefix conversion upside down is wrong, in words. */
-function flipNote(p: Prefix, base: string, up: boolean): string {
-  const small = p.power < 0;
-  const big = p.symbol + base, one = base;
-  if (up)
-    return small
-      ? `${big} is smaller than ${one}, so 1 ${big} is a fraction of a ${one}.`
-      : `${big} is bigger than ${one}, so 1 ${big} is many ${UNIT_NAME[base]}.`;
-  return small
-    ? `${big} is small, so it takes many of them to make 1 ${one}. That's the trap: fraction prefixes point the other way.`
-    : `${big} is big, so 1 ${one} is only a small part of one ${big}.`;
+/** How to get from one rung to another, in the handout's words. */
+export function ladderMove(from: Rung, to: Rung) {
+  const steps = from.power - to.power;
+  const n = Math.abs(steps);
+  const smaller = steps > 0;
+  return {
+    steps,
+    words: smaller
+      ? `${placesWord(n).replace("place", "step")} down the ladder: multiply by ${formatStandard(pow10(n))}, so move the decimal ${placesWord(n)} to the right`
+      : `${placesWord(n).replace("place", "step")} up the ladder: divide by ${formatStandard(pow10(n))}, so move the decimal ${placesWord(n)} to the left`,
+  };
 }
 
-/** "1 km = ___ m", "1 m = ___ cm", sometimes with more than one: "4.5 kg = ___ g". */
+/** "4.5 km = ___ m", "250 cm = ___ m", "6 dag = ___ dg" — moving the decimal along the ladder. */
 export const prefixFill: Maker = {
   id: "prefix-fill",
   concepts: ["prefixes"],
   make(r) {
-    const base = pick(r, Object.keys(USES));
-    const p = byName(pick(r, USES[base]));
-    const up = r() < 0.5;
-    // Mostly one unit, as the plan asks. A few of them only when the answer
-    // stays a comfortable number — no 0.000025 to count zeros in.
-    let n = r() < 0.6 ? 1 : pick(r, [2, 3, 4.5, 7, 25]);
-    if (times(n, up ? p.power : -p.power) < 1) n = 1;
-    const from = up ? p.symbol + base : base;
-    const to = up ? base : p.symbol + base;
-    const answer = times(n, up ? p.power : -p.power);
-    const flipped = times(n, up ? -p.power : p.power);
+    const base = pick(r, BASES);
+    let a = pick(r, LADDER), b = pick(r, LADDER);
+    while (a === b || Math.abs(a.power - b.power) > 4) [a, b] = [pick(r, LADDER), pick(r, LADDER)];
+    const steps = a.power - b.power;
+    let n = pick(r, [1, 1, 2, 3, 4.5, 7, 25, 250, 380, 0.5]);
+    if (times(n, steps) < 0.001 || times(n, steps) > 1e7) n = 1;
+    const answer = times(n, steps);
+    const flipped = times(n, -steps);
+    const move = ladderMove(a, b);
+    const from = unitOf(a, base), to = unitOf(b, base);
     return {
       kind: "number",
-      prompt: `${n} ${from} = ___ ${to}`,
+      prompt: `${formatStandard(n)} ${from} = ___ ${to}`,
       answer,
       unit: to,
-      traps: [{ value: flipped, note: flipNote(p, base, up) }],
-      why: `${p.name}- means ${p.means}, so 1 ${p.symbol}${base} = ${formatStandard(pow10(p.power))} ${base}` +
-        (up ? "" : ` and 1 ${base} = ${formatStandard(pow10(-p.power))} ${p.symbol}${base}`) +
-        (n === 1 ? "." : `. ${n} of them: ${formatStandard(answer)} ${to}.`),
+      traps: [{
+        value: flipped,
+        note: steps > 0
+          ? `${to} is the smaller unit, so it takes more of them: multiply, and move the decimal to the right.`
+          : `${to} is the bigger unit, so it takes fewer of them: divide, and move the decimal to the left.`,
+      }],
+      why: `${from} → ${to} is ${move.words}: ${formatStandard(n)} ${from} = ${formatStandard(answer)} ${to}.`,
     };
   },
 };
 
-/** "Which prefix means 1/1,000?" — the name, typed from memory. */
+/** "Which prefix means 1/10 of a unit?" — the name, typed from memory. */
 export const prefixName: Maker = {
   id: "prefix-name",
   concepts: ["prefixes"],
@@ -89,13 +94,28 @@ export const prefixName: Maker = {
     return {
       kind: "text",
       prompt: `Which prefix means ${p.means}?`,
-      accept: [p.name, p.name + "-"],
-      why: `${p.name}- (${p.symbol}) means ${p.means}, or 10${sup(p.power)}.`,
+      accept: [p.name, p.name + "-", ...(p.name === "deca" ? ["deka", "deka-"] : [])],
+      why: `${p.name}- (${p.symbol}): ${p.power > 0 ? "1 " + p.name + " = " + p.means : formatStandard(pow10(-p.power)) + " " + p.name + " = 1 unit"}.`,
     };
   },
 };
 
-/** "What does micro- mean?" — the number, typed. */
+/** "In King Henry Doesn't Usually Drink Chocolate Milk, which prefix is 'Drink'?" */
+export const ladderWord: Maker = {
+  id: "ladder-word",
+  concepts: ["prefixes"],
+  make(r) {
+    const p = pick(r, PREFIXES);
+    return {
+      kind: "text",
+      prompt: `King Henry Doesn't Usually Drink Chocolate Milk: which prefix does “${p.word}” stand for?`,
+      accept: [p.name, p.name + "-", ...(p.name === "deca" ? ["deka"] : [])],
+      why: "King kilo, Henry hecto, Doesn't deca, Usually the base unit, Drink deci, Chocolate centi, Milk milli.",
+    };
+  },
+};
+
+/** "What does deci- mean? Give the number" — 1/10, 0.1 or 10^-1. */
 export const prefixMeaning: Maker = {
   id: "prefix-meaning",
   concepts: ["prefixes"],
@@ -103,18 +123,18 @@ export const prefixMeaning: Maker = {
     const p = pick(r, PREFIXES);
     return {
       kind: "number",
-      prompt: `What does ${p.name}- mean? Give the number (a fraction or a power of ten is fine).`,
+      prompt: `How many units is one ${p.name}-unit? (A fraction like 1/10 is fine.)`,
       answer: pow10(p.power),
-      traps: [{ value: pow10(-p.power), note: p.power < 0 ? `That's upside down: ${p.name}- makes a unit smaller, not bigger.` : `That's upside down: ${p.name}- makes a unit bigger, not smaller.` }],
-      why: `${p.name}- means ${p.means} = 10${sup(p.power)}.`,
+      traps: [{ value: pow10(-p.power), note: p.power < 0 ? `${p.name}- is below the base unit, so one is a fraction of a unit.` : `${p.name}- is above the base unit, so one is many units.` }],
+      why: `1 ${p.name}- = ${p.power > 0 ? p.means : formatStandard(pow10(p.power)) + " of a unit (" + p.means.replace(" of a unit", "") + ")"}.`,
     };
   },
 };
 
-/** "What is the symbol for micro-?" — capital M and small m are different prefixes. */
+/** "What is the symbol for deca-?" */
 export const prefixSymbol: Maker = {
   id: "prefix-symbol",
-  concepts: ["prefixes", "prefix-traps"],
+  concepts: ["prefixes"],
   make(r) {
     const p = pick(r, PREFIXES);
     const others = shuffle(r, PREFIXES.filter((x) => x !== p)).slice(0, 3).map((x) => x.symbol);
@@ -124,9 +144,31 @@ export const prefixSymbol: Maker = {
       prompt: `What is the symbol for ${p.name}-?`,
       choices,
       correct: choices.indexOf(p.symbol),
-      why:
-        `${p.name}- is ${p.symbol}.` +
-        (p.name === "mega" || p.name === "milli" ? " Capital M is mega (a million); small m is milli (a thousandth)." : ""),
+      why: `${p.name}- is ${p.symbol}: ${p.symbol}m, ${p.symbol}L, ${p.symbol}g.`,
+    };
+  },
+};
+
+/** How many steps, and which way does the decimal go? — the handout's arrows. */
+export const ladderSteps: Maker = {
+  id: "ladder-steps",
+  concepts: ["prefixes"],
+  make(r) {
+    const base = pick(r, BASES);
+    let a = pick(r, LADDER), b = pick(r, LADDER);
+    while (a === b) b = pick(r, LADDER);
+    const n = Math.abs(a.power - b.power);
+    const right = a.power > b.power;
+    const say = (k: number, toRight: boolean) => `${placesWord(k)} to the ${toRight ? "right" : "left"}`;
+    const answer = say(n, right);
+    const others = [...new Set([say(n, !right), say(n === 1 ? 2 : n - 1, right), say(n + 1, right)])].filter((c) => c !== answer);
+    const choices = shuffle(r, [answer, ...others.slice(0, 3)]);
+    return {
+      kind: "choice",
+      prompt: `${unitOf(a, base)} → ${unitOf(b, base)}: which way does the decimal move, and how far?`,
+      choices,
+      correct: choices.indexOf(answer),
+      why: `${unitOf(a, base)} → ${unitOf(b, base)} is ${ladderMove(a, b).words}.`,
     };
   },
 };
@@ -197,6 +239,36 @@ export const toStandard: Maker = {
 };
 
 /** Which is the number? — the sense check: a negative power means less than 1. */
+/** The four steps by hand: put the decimal in place, count, and sign the power. */
+export const moveDecimal: Maker = {
+  id: "move-decimal",
+  concepts: ["sci-write"],
+  make(r) {
+    const { mantissa, exponent, value } = sciNumber(r);
+    return decimalQuestion(value, mantissa, exponent);
+  },
+};
+
+/** A move-the-decimal question for a number, from its standard form. */
+export function decimalQuestion(value: number, mantissa: number, exponent: number): Question {
+  const plain = formatStandard(value).replace(/,/g, "");
+  const [whole, frac = ""] = plain.split(".");
+  const digits = whole + frac;
+  const start = whole.length;
+  const target = digits.search(/[1-9]/) + 1;
+  return {
+    kind: "decimal",
+    prompt: `Write ${formatStandard(value)} in scientific notation.`,
+    digits,
+    start,
+    target,
+    exponent,
+    why:
+      `The decimal goes just right of the first non-zero digit, making ${mantissa}. It moved ${Math.abs(exponent)} place${Math.abs(exponent) === 1 ? "" : "s"} ` +
+      `to the ${exponent < 0 ? "right, so the exponent is negative" : "left, so the exponent is positive"}: ${sciText(mantissa, exponent)}.`,
+  };
+}
+
 export const sciSense: Maker = {
   id: "sci-sense",
   concepts: ["sci-standard"],
@@ -328,48 +400,35 @@ export const displacement: Maker = {
 // Fixed questions: the plan's warm-up, Practice A and B, and exit check
 // ---------------------------------------------------------------------------
 
-/** Warm-up, no notes: write the five prefixes and their symbols from what each means. */
+/** Warm-up, no notes: the ladder from its sentence — each word's prefix and symbol. */
 export const prefixTable = fixed("warmup-prefix-table", ["prefixes"], {
   kind: "table",
-  prompt: "From memory: write the prefix and its symbol for each amount.",
+  prompt: "From memory: King Henry Doesn't Usually Drink Chocolate Milk. Write each word's prefix and symbol.",
   context: ["Write what you remember from class. Leave a box blank if you don't know it yet — that's what this is for."],
-  columns: ["Means", "Prefix", "Symbol"],
-  rows: PREFIXES.map((p) => [
-    { given: p.means },
-    { text: [p.name, p.name + "-"], placeholder: "prefix" },
-    { text: p.symbol === "µ" ? ["µ", "μ", "u"] : [p.symbol], caseSensitive: true, placeholder: "symbol" },
-  ]),
-  why: "mega- M (a million), kilo- k (a thousand), centi- c (a hundredth), milli- m (a thousandth), micro- µ (a millionth). Capital M and small m are different prefixes.",
+  columns: ["Word", "Prefix", "Symbol"],
+  rows: LADDER.map((p) =>
+    p.name
+      ? [
+          { given: p.word },
+          { text: [p.name, p.name + "-", ...(p.name === "deca" ? ["deka", "deka-"] : [])], placeholder: "prefix" },
+          { text: [p.symbol], caseSensitive: true, placeholder: "symbol" },
+        ]
+      : [{ given: p.word }, { given: "base unit" }, { given: "m, L, g" }],
+  ),
+  why: "King kilo (k), Henry hecto (h), Doesn't deca (da), Usually the base unit (m, L, g), Drink deci (d), Chocolate centi (c), Milk milli (m).",
 });
 
-const A = (n: number, prompt: string, answer: number, unit: string, trap: { value: number; note: string } | null, why: string) =>
-  fixed("practice-a-" + n, ["prefixes"], { kind: "number", prompt, answer, unit, traps: trap ? [trap] : [], why });
+const A = (n: number, prompt: string, answer: number, unit: string, why: string) =>
+  fixed("practice-a-" + n, ["prefixes"], { kind: "number", prompt, answer, unit, why });
 
+/** The plan's Practice A, on the handout's ladder. */
 export const PRACTICE_A: Maker[] = [
-  A(1, "1 km = ___ m", 1000, "m", { value: 0.001, note: "A kilometer is the bigger unit, so 1 km is many meters." }, "kilo- means 1,000: 1 km = 1,000 m."),
-  A(2, "1 m = ___ cm", 100, "cm", { value: 0.01, note: "Fraction prefixes point the other way: centimeters are small, so it takes many of them to make a meter." }, "A centimeter is 1/100 of a meter, so 1 m = 100 cm."),
-  A(3, "1 g = ___ mg", 1000, "mg", { value: 0.001, note: "Milligrams are small, so a gram is many of them." }, "A milligram is 1/1,000 of a gram, so 1 g = 1,000 mg."),
-  A(4, "1 L = ___ µL", 1_000_000, "µL", { value: 1e-6, note: "Microliters are tiny, so a liter is a great many of them." }, "A microliter is 1/1,000,000 of a liter, so 1 L = 1,000,000 µL."),
-  A(5, "1 MW = ___ W", 1_000_000, "W", { value: 1e-6, note: "Capital M is mega, a million — not milli." }, "mega- means 1,000,000: 1 MW = 1,000,000 W."),
-  fixed("practice-a-6", ["prefixes", "prefix-traps"], {
-    kind: "choice",
-    prompt: "Which is bigger, 1 mg or 1 Mg? By how much?",
-    choices: ["1 Mg, a billion times bigger", "1 Mg, a thousand times bigger", "1 mg, a million times bigger", "They are the same"],
-    correct: 0,
-    whyPerChoice: {
-      1: "1 Mg is 1,000,000 g and 1 mg is 0.001 g. Divide: 1,000,000 ÷ 0.001 = 1,000,000,000.",
-      2: "Capital M is mega (a million grams); small m is milli (a thousandth of a gram).",
-      3: "Capital M and small m are different prefixes: mega- and milli-.",
-    },
-    why: "1 Mg = 1,000,000 g and 1 mg = 0.001 g, so 1 Mg is 1,000,000 ÷ 0.001 = a billion times bigger.",
-  }),
-  fixed("trap-mkg", ["prefix-traps"], {
-    kind: "choice",
-    prompt: "Which of these is not a real unit?",
-    choices: ["mkg", "mg", "Mg", "kg"],
-    correct: 0,
-    why: "Mass prefixes go on the gram, not the kilogram. A thousandth of a kilogram is a gram; a millionth of a kilogram is a milligram (mg).",
-  }),
+  A(1, "1 km = ___ m", 1000, "m", "km → m is 3 steps down the ladder: move the decimal 3 places right. 1 km = 1,000 m."),
+  A(2, "1 m = ___ cm", 100, "cm", "m → cm is 2 steps down: move the decimal 2 places right. 1 m = 100 cm."),
+  A(3, "1 g = ___ mg", 1000, "mg", "g → mg is 3 steps down: move the decimal 3 places right. 1 g = 1,000 mg."),
+  A(4, "1 L = ___ dL", 10, "dL", "L → dL is 1 step down: move the decimal 1 place right. 1 L = 10 dL."),
+  A(5, "1 dam = ___ m", 10, "m", "dam → m is 1 step down: 1 dam = 10 m."),
+  A(6, "1 hg = ___ g", 100, "g", "hg → g is 2 steps down: 1 hg = 100 g."),
 ];
 
 const B = (n: number, text: string, value: number, form: "sci" | "standard", why: string, traps: { value: number; note: string }[] = []) =>
@@ -433,7 +492,7 @@ export const EXIT_1: Maker[] = [
 ];
 
 /** Every generator in the unit, for review and practice. */
-export const GENERATORS_1: Maker[] = [prefixFill, prefixName, prefixMeaning, prefixSymbol, toSci, toStandard, sciSense, readCylinder, lineValue, displacement];
+export const GENERATORS_1: Maker[] = [prefixFill, prefixName, prefixMeaning, prefixSymbol, ladderWord, ladderSteps, toSci, toStandard, sciSense, readCylinder, lineValue, displacement];
 
 // Formatting helpers are part of what the generators promise; export for tests.
 export { formatSci };

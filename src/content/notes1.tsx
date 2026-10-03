@@ -3,57 +3,54 @@
 // questions test remembering the idea, not re-reading the card.
 import React from "react";
 import type { Note } from "./types";
-import { PREFIXES } from "./unit1";
+import { LADDER } from "./unit1";
 import { CylinderFigure } from "../ui/CylinderFigure";
 import { closeUp } from "./unit1";
 
 export const PREFIX_NOTES: Note[] = [
   {
-    title: "Five prefixes",
+    title: "King Henry Doesn't Usually Drink Chocolate Milk",
     body: (
       <>
-        <p>A prefix in front of a unit makes it bigger or smaller. Learn these five:</p>
-        <table className="notes-table">
+        <p>The first letters give the metric ladder, biggest to smallest. The base unit is the meter, liter or gram.</p>
+        <table className="notes-table ladder">
           <thead>
-            <tr><th>Prefix</th><th>Symbol</th><th>Means</th></tr>
+            <tr><th></th><th>Prefix</th><th>Symbol</th><th>Size</th></tr>
           </thead>
           <tbody>
-            {PREFIXES.map((p) => (
-              <tr key={p.name}>
-                <td>{p.name}-</td>
-                <td className="symbol">{p.symbol}</td>
-                <td>{p.means}</td>
+            {LADDER.map((p) => (
+              <tr key={p.word} className={p.name ? "" : "base"}>
+                <td className="word">{p.word}</td>
+                <td>{p.name ? p.name + "-" : "base unit"}</td>
+                <td className="symbol">{p.name ? p.symbol : "m, L, g"}</td>
+                <td>{p.power > 0 ? "1 " + p.name + " = " + p.means : p.power < 0 ? (10 ** -p.power).toLocaleString("en-US") + " " + p.name + " = 1 unit" : ""}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        <p>So a kilometer is 1,000 meters, and a milligram is 1/1,000 of a gram.</p>
       </>
-    ),
-  },
-  {
-    title: "How big is each one?",
-    body: (
-      <ul className="notes-sizes">
-        <li><b>mega-</b> A megagram (Mg) is 1,000,000 g — about the mass of a small car.</li>
-        <li><b>kilo-</b> A kilogram is a bag of sugar. A kilometer is about 2/3 of a mile.</li>
-        <li><b>centi-</b> A centimeter is a bit less than half an inch.</li>
-        <li><b>milli-</b> A millimeter is about two pencil leads thick.</li>
-        <li><b>micro-</b> A micrometer (µm) is tiny: a hair is about 40 of them thick.</li>
-      </ul>
     ),
   },
 ];
 
-export const TRAP_NOTES: Note[] = [
+export const LADDER_NOTES: Note[] = [
   {
-    title: "Three traps",
+    title: "Moving along the ladder",
     body: (
-      <ol className="notes-traps">
-        <li><b>Capital M or small m?</b> 1 Mg is a million grams; 1 mg is a thousandth of a gram. The size of the letter is the whole difference.</li>
-        <li><b>Mass prefixes go on the gram,</b> not the kilogram: mg, kg, Mg — never “mkg”.</li>
-        <li><b>Small units take many of them.</b> A centimeter is 1/100 of a meter, so 1 m = <b>100</b> cm, not 1/100 cm.</li>
-      </ol>
+      <>
+        <p>
+          Going <b>down</b> the ladder (to a smaller unit): <b>multiply by 10</b> for each step — move the decimal one place to the{" "}
+          <b>right</b>.
+        </p>
+        <p>
+          Going <b>up</b> the ladder (to a larger unit): <b>divide by 10</b> for each step — move the decimal one place to the{" "}
+          <b>left</b>.
+        </p>
+        <p className="notes-example">
+          5 km = 50 hm = 500 dam = 5,000 m = 50,000 dm = 500,000 cm = 5,000,000 mm
+          <span>each step down: one more place to the right</span>
+        </p>
+      </>
     ),
   },
 ];
@@ -76,13 +73,17 @@ export const SCI_READ_NOTES: Note[] = [
 
 export const SCI_WRITE_NOTES: Note[] = [
   {
-    title: "Writing it: which way does the power go?",
+    title: "To write a number in scientific notation",
     body: (
       <>
-        <p>Move the point until one digit is in front of it, and count the moves.</p>
-        <p className="notes-example">5,100,000 = 5.1 × 10⁶ <span>a big number: positive power</span></p>
-        <p className="notes-example">0.00082 = 8.2 × 10⁻⁴ <span>a small number: negative power</span></p>
-        <p className="notes-tip">To type it: <code>5.1 x 10^6</code> or <code>5.1e6</code>. The box shows how it reads.</p>
+        <ol className="notes-steps">
+          <li>Move the decimal to the right of the first non-zero number.</li>
+          <li>Count how many places the decimal had to be moved.</li>
+          <li>If the decimal had to be moved to the right, the exponent is negative.</li>
+          <li>If the decimal had to be moved to the left, the exponent is positive.</li>
+        </ol>
+        <p className="notes-example">5,100,000 → 5.1 × 10⁶ <span>moved 6 places left: positive</span></p>
+        <p className="notes-example">0.00082 → 8.2 × 10⁻⁴ <span>moved 4 places right: negative</span></p>
       </>
     ),
   },

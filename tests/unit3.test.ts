@@ -31,7 +31,7 @@ describe("unit 3: rates and vocabulary", () => {
 
   it("keeps the plan's answer key", () => {
     const got = RATE_PRACTICE.map((m) => m.make(rng(1))).map((q) => (q.kind === "chain" ? q.answer : NaN));
-    [25, 43.2, 80, 13.4, 9, 1.26, 0.1].forEach((v, i) => expect(Math.abs(got[i] - v) <= v * 0.005, "rate " + (i + 1) + " got " + got[i]).toBe(true));
+    [25, 43.2, 80, 13.4, 9, 300, 0.1].forEach((v, i) => expect(Math.abs(got[i] - v) <= v * 0.005, "rate " + (i + 1) + " got " + got[i]).toBe(true));
     const exit = EXIT_3[2].make(rng(1));
     expect(exit.kind === "chain" && exit.answer).toBe(10);
   });

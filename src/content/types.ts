@@ -78,6 +78,24 @@ export type Question =
   | { kind: "steps"; prompt: string; context?: string[]; figure?: Figure; parts: Part[]; why: string }
   | {
       /**
+       * The class's four steps for scientific notation, done by hand: move
+       * the decimal to just right of the first non-zero digit, count the
+       * places, and give the power its sign (moved right: negative; moved
+       * left: positive).
+       */
+      kind: "decimal";
+      prompt: string;
+      /** The number's digits, without its point: 0.00056 is "000056". */
+      digits: string;
+      /** Where the point starts, counted in digits from the left. */
+      start: number;
+      /** Where it belongs: just right of the first non-zero digit. */
+      target: number;
+      exponent: number;
+      why: string;
+    }
+  | {
+      /**
        * Write it from memory: a definition or a short explanation, checked
        * against the key words it needs. When the check can't tell, the
        * student marks it honestly against the model answer.

@@ -2,15 +2,22 @@
 // for truth (is its top really the same amount as its bottom?) and a chain of
 // factors for what it leaves behind once units cancel.
 
-export type Dim = "length" | "time" | "mass" | "volume" | "power";
+export type Dim = "length" | "time" | "mass" | "volume";
 
-/** Each unit's size in its dimension's base unit (m, s, g, mL, W). */
+/**
+ * Each unit's size in its dimension's base unit (m, s, g, mL). The metric
+ * ones are the class handout's ladder — kilo, hecto, deca, the base unit,
+ * deci, centi, milli — on meters, liters and grams; then cm³ for volume, and
+ * the time and English units the conversion-factor problems use.
+ */
 export const UNIT: Record<string, { dim: Dim; size: number; name: string }> = {
   km: { dim: "length", size: 1000, name: "kilometers" },
+  hm: { dim: "length", size: 100, name: "hectometers" },
+  dam: { dim: "length", size: 10, name: "decameters" },
   m: { dim: "length", size: 1, name: "meters" },
+  dm: { dim: "length", size: 0.1, name: "decimeters" },
   cm: { dim: "length", size: 0.01, name: "centimeters" },
   mm: { dim: "length", size: 0.001, name: "millimeters" },
-  "µm": { dim: "length", size: 1e-6, name: "micrometers" },
   mi: { dim: "length", size: 1609.344, name: "miles" },
   yd: { dim: "length", size: 0.9144, name: "yards" },
   ft: { dim: "length", size: 0.3048, name: "feet" },
@@ -20,20 +27,21 @@ export const UNIT: Record<string, { dim: Dim; size: number; name: string }> = {
   hr: { dim: "time", size: 3600, name: "hours" },
   day: { dim: "time", size: 86400, name: "days" },
   yr: { dim: "time", size: 31_536_000, name: "years" },
-  Mg: { dim: "mass", size: 1e6, name: "megagrams" },
   kg: { dim: "mass", size: 1000, name: "kilograms" },
+  hg: { dim: "mass", size: 100, name: "hectograms" },
+  dag: { dim: "mass", size: 10, name: "decagrams" },
   g: { dim: "mass", size: 1, name: "grams" },
+  dg: { dim: "mass", size: 0.1, name: "decigrams" },
+  cg: { dim: "mass", size: 0.01, name: "centigrams" },
   mg: { dim: "mass", size: 0.001, name: "milligrams" },
-  "µg": { dim: "mass", size: 1e-6, name: "micrograms" },
-  "m³": { dim: "volume", size: 1e6, name: "cubic meters" },
+  kL: { dim: "volume", size: 1e6, name: "kiloliters" },
+  hL: { dim: "volume", size: 1e5, name: "hectoliters" },
+  daL: { dim: "volume", size: 1e4, name: "decaliters" },
   L: { dim: "volume", size: 1000, name: "liters" },
+  dL: { dim: "volume", size: 100, name: "deciliters" },
+  cL: { dim: "volume", size: 10, name: "centiliters" },
   mL: { dim: "volume", size: 1, name: "milliliters" },
   "cm³": { dim: "volume", size: 1, name: "cubic centimeters" },
-  "µL": { dim: "volume", size: 0.001, name: "microliters" },
-  gal: { dim: "volume", size: 3785.41, name: "gallons" },
-  MW: { dim: "power", size: 1e6, name: "megawatts" },
-  kW: { dim: "power", size: 1000, name: "kilowatts" },
-  W: { dim: "power", size: 1, name: "watts" },
 };
 
 /** The units of a quantity: 3.5 km is {num: [km]}; 90 km/hr is {num: [km], den: [hr]}. */

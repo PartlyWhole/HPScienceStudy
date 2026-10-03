@@ -84,13 +84,13 @@ export const PRACTICE_4: Maker[] = [
     "d = 0.5 × 2.54 = 1.27 cm, so r = 0.635 cm; h = 3.5 × 2.54 = 8.89 cm. V = π × 0.635² × 8.89 ≈ 11.3 cm³.",
   )),
   fixed("s4-7", ["box-volume", "volume-units"], steps(
-    "A tank 2 m × 1.5 m × 0.8 m. What is its volume?",
-    { shape: "box", l: 2, w: 1.5, h: 0.8, unit: "m" },
+    "A tank 200 cm × 150 cm × 80 cm. What is its volume?",
+    { shape: "box", l: 200, w: 150, h: 80, unit: "cm" },
     [
-      { label: "V in m³", answer: 2.4, unit: "m³" },
-      { label: "V in L", answer: 2400, unit: "L", traps: [{ value: 0.0024, note: "1 m³ is 1,000 L — a cubic meter holds a lot. Multiply by 1,000." }] },
+      { label: "V in cm³", answer: 2_400_000, unit: "cm³" },
+      { label: "V in L", answer: 2400, unit: "L", traps: [litersTrap(2_400_000)] },
     ],
-    "V = 2 × 1.5 × 0.8 = 2.4 m³, and 1,000 L = 1 m³, so 2,400 L.",
+    "V = 200 × 150 × 80 = 2,400,000 cm³, and 1,000 cm³ = 1 L, so 2,400 L.",
   )),
   fixed("s4-8", ["l-shape"], steps(
     "An L-shaped block: its base is a 6 cm × 2 cm rectangle with a 2 cm × 3 cm rectangle attached along one end. It's 3 cm tall.",
@@ -273,8 +273,7 @@ export const volumeUnitsMaker: Maker = {
     const [from, to, amounts] = pick(r, [
       ["cm³", "L", [250, 750, 1920, 2500, 4200]],
       ["L", "cm³", [0.5, 1.5, 2.4, 3]],
-      ["m³", "L", [0.5, 2.4, 3, 1.2]],
-      ["L", "m³", [500, 2400, 6000]],
+      ["mL", "L", [125, 450, 1500, 2750]],
       ["cm³", "mL", [45, 125, 300]],
     ] as [string, string, number[]][]);
     return chain(pick(r, amounts), from, to);

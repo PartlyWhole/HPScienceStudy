@@ -25,7 +25,6 @@ export const BOX_NOTES: Note[] = [
           <tbody>
             <tr><td>1 cm³</td><td>=</td><td><b>1 mL</b></td></tr>
             <tr><td>1,000 cm³</td><td>=</td><td><b>1 L</b></td></tr>
-            <tr><td>1,000 L</td><td>=</td><td><b>1 m³</b></td></tr>
           </tbody>
         </table>
         <p>So 24 cm³ is 24 mL, or 0.024 L.</p>

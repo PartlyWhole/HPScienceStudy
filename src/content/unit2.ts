@@ -70,15 +70,15 @@ export const PRACTICE_2: Maker[] = [
   P(7, 15, "in", "cm", [], ["factor-method", "factors-to-know"]),
   P(8, 2.5, "mi", "ft", [], ["factor-method", "factors-to-know"]),
   P(9, 5, "yd", "ft", [], ["factor-method", "factors-to-know"]),
-  P(10, 0.045, "MW", "W"),
+  P(10, 0.045, "kL", "L"),
 ];
 
 export const PRACTICE_2_TWO_STEP: Maker[] = [
   P(11, 380, "mm", "cm", ["m"], ["two-step"]),
   fixed("s2-practice-12", ["factor-method", "sci-write"], {
-    ...chain(2.6, "m", "µm"),
-    prompt: "Convert 2.6 m to µm. (Then think: how would you write it in scientific notation?)",
-    why: "2.6 m × (1,000,000 µm / 1 m) = 2,600,000 µm = 2.6 × 10⁶ µm.",
+    ...chain(2.6, "km", "mm", ["m"]),
+    prompt: "Convert 2.6 km to mm, through meters. (Then think: how would you write it in scientific notation?)",
+    why: "2.6 km × (1,000 m / 1 km) × (1,000 mm / 1 m) = 2,600,000 mm = 2.6 × 10⁶ mm.",
   }),
   P(13, 3, "day", "min", ["hr"], ["two-step", "factors-to-know"]),
   fixed("s2-practice-14", ["factor-method", "sci-standard"], {
@@ -127,7 +127,6 @@ export const FACTS: { one: string; is: number; of: string }[] = [
   { one: "in", is: 2.54, of: "cm" },
   { one: "cm³", is: 1, of: "mL" },
   { one: "L", is: 1000, of: "cm³" },
-  { one: "m³", is: 1000, of: "L" },
 ];
 
 const plural = (unit: string, n: number) => (unit === "day" && n !== 1 ? "days" : unit);
@@ -154,7 +153,7 @@ export const prefixPowers = fixed("warmup-prefix-powers", ["prefixes"], {
   prompt: "From memory: the power of ten for each prefix.",
   columns: ["Prefix", "Symbol", "Power of ten"],
   rows: PREFIXES.map((p) => [{ given: p.name + "-" }, { given: p.symbol }, { number: Number(`1e${p.power}`), placeholder: "10^?" }]),
-  why: "mega 10⁶, kilo 10³, centi 10⁻², milli 10⁻³, micro 10⁻⁶. Type them as 10^6, 10^-2 and so on.",
+  why: "kilo 10³, hecto 10², deca 10¹, deci 10⁻¹, centi 10⁻², milli 10⁻³ — one power of ten for each step on the ladder. Type them as 10^3, 10^-2 and so on.",
 });
 
 export const warmSci = fixed("warmup-2-sci", ["sci-write"], {
@@ -172,10 +171,10 @@ export const warmSci = fixed("warmup-2-sci", ["sci-write"], {
 
 /** Metric pairs one factor apart, and pairs that need the base unit between them. */
 const ONE_STEP: [string, string][] = [
-  ["km", "m"], ["m", "cm"], ["m", "mm"], ["m", "µm"], ["kg", "g"], ["g", "mg"], ["L", "mL"], ["L", "µL"], ["MW", "W"], ["kW", "W"],
+  ["km", "m"], ["m", "cm"], ["m", "mm"], ["m", "dm"], ["hm", "m"], ["kg", "g"], ["g", "mg"], ["g", "cg"], ["L", "mL"], ["L", "cL"], ["kL", "L"],
 ];
 const TWO_STEP: [string, string, string][] = [
-  ["mm", "cm", "m"], ["cm", "mm", "m"], ["km", "cm", "m"], ["cm", "km", "m"], ["mg", "kg", "g"], ["kg", "mg", "g"], ["mL", "µL", "L"], ["µm", "mm", "m"], ["MW", "kW", "W"],
+  ["mm", "cm", "m"], ["cm", "mm", "m"], ["km", "cm", "m"], ["cm", "km", "m"], ["mg", "kg", "g"], ["kg", "mg", "g"], ["mL", "kL", "L"], ["kL", "mL", "L"], ["dm", "km", "m"],
 ];
 const TIME_ONE: [string, string][] = [["min", "s"], ["hr", "min"], ["hr", "s"], ["day", "hr"], ["yr", "day"]];
 const TIME_TWO: [string, string, string][] = [["day", "min", "hr"], ["hr", "s", "min"], ["day", "s", "hr"]];

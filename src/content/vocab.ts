@@ -18,10 +18,10 @@ export const TERMS: Term[] = [
   },
   {
     term: "derived unit",
-    model: "A unit made by combining base units, like the joule, the newton or m³.",
+    model: "A unit made by combining base units, like the newton, the joule or the pascal.",
     keys: [
       { label: "made by combining base units", any: ["combin", "made from", "made of", "made by", "built from", "base unit", "two or more"] },
-      { label: "an example (joule, newton, m³…)", any: ["joule", "newton", "watt", "m³", "m3", "cubic", "volt", "pascal", "m/s", "speed", "area", "volume", "density"] },
+      { label: "an example (newton, joule, pascal…)", any: ["joule", "newton", "watt", "hertz", "coulomb", "ohm", "m³", "m3", "cubic", "volt", "pascal", "m/s", "speed", "area", "volume", "density"] },
     ],
   },
   {
@@ -82,7 +82,7 @@ export const TERMS: Term[] = [
     keys: [
       { label: "added to a unit", any: ["add", "front", "before", "start", "in front", "beginning", "attach"] },
       { label: "makes it larger or smaller", any: ["larger", "smaller", "bigger", "power", "times", "multipl", "size"] },
-      { label: "an example (kilo-, centi-, milli-)", any: ["kilo", "centi", "milli", "mega", "micro"] },
+      { label: "an example (kilo-, centi-, milli-)", any: ["kilo", "hecto", "deca", "deka", "deci", "centi", "milli"] },
     ],
   },
   {
@@ -153,4 +153,15 @@ export const FACTS: { text: string; truth: boolean; why: string }[] = [
   { text: "A kilogram is about 2.2 lb on Earth.", truth: true, why: "About 2.2 lb." },
   { text: "The second is used to define every base unit except the mole.", truth: true, why: "Every base unit but the mole depends on the second." },
   { text: "The metric system began in England during the Industrial Revolution.", truth: false, why: "It began in France, during the French Revolution, with the meter and the kilogram." },
+];
+
+/** The SI base units, from the class's SI sheet. */
+export const BASE_UNITS: { quantity: string; unit: string; symbol: string }[] = [
+  { quantity: "Length", unit: "meter", symbol: "m" },
+  { quantity: "Mass", unit: "kilogram", symbol: "kg" },
+  { quantity: "Time", unit: "second", symbol: "s" },
+  { quantity: "Electric current", unit: "ampere", symbol: "A" },
+  { quantity: "Temperature", unit: "kelvin", symbol: "K" },
+  { quantity: "Amount of substance", unit: "mole", symbol: "mol" },
+  { quantity: "Luminous intensity", unit: "candela", symbol: "cd" },
 ];

@@ -30,7 +30,7 @@ describe("unit 2: the conversion-factor method", () => {
 
   it("keeps the plan's answer key", () => {
     const got = [...PRACTICE_2, ...PRACTICE_2_TWO_STEP].map((m) => m.make(rng(1))).map((q) => (q.kind === "chain" ? q.answer : NaN));
-    const want = [2400, 0.85, 75, 620, 2700, 10800, 38.1, 13200, 15, 45000, 38, 2_600_000, 4320, 5.2];
+    const want = [2400, 0.85, 75, 620, 2700, 10800, 38.1, 13200, 15, 45, 38, 2_600_000, 4320, 5.2];
     want.forEach((v, i) => expect(got[i], "practice " + (i + 1)).toBeCloseTo(v, 9));
     const exit = EXIT_2.map((m) => m.make(rng(1)));
     expect(exit[0].kind === "chain" && exit[0].answer).toBe(750);

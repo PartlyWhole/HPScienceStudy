@@ -7,7 +7,7 @@ import { pick, shuffle } from "../lib/rng";
 import type { Maker, Question } from "./types";
 import { type Factor, type Units, chainValue, convert, unitText } from "./units";
 import { chain, stepFactor } from "./unit2";
-import { FACTS, TERMS, type Term } from "./vocab";
+import { BASE_UNITS, FACTS, TERMS, type Term } from "./vocab";
 
 type ChainQ = Extract<Question, { kind: "chain" }>;
 const fixed = (id: string, concepts: string[], q: Question): Maker => ({ id, concepts, make: () => q, fixed: true });
@@ -15,10 +15,9 @@ const per = (a: string, b: string): Units => ({ num: [a], den: [b] });
 const tidy = (v: number) => Number(v.toPrecision(10));
 const frac = (f: Factor) => `(${formatStandard(f.top.n)} ${f.top.unit} / ${formatStandard(f.bottom.n)} ${f.bottom.unit})`;
 
-/** The rounded factors the plan uses for miles and gallons. */
+/** The rounded factor the plan uses for miles. */
 const PLAN_FACTOR: Record<string, Factor> = {
   "mi>m": { top: { n: 1609, unit: "m" }, bottom: { n: 1, unit: "mi" } },
-  "gal>L": { top: { n: 3.785, unit: "L" }, bottom: { n: 1, unit: "gal" } },
 };
 
 /**
@@ -30,7 +29,7 @@ export function rateChain(n: number, from: Units, to: Units, o: { guided?: boole
   const solution: Factor[] = [];
   if (a !== c) solution.push(PLAN_FACTOR[a + ">" + c] ?? stepFactor(a, c));
   if (b !== d) solution.push(stepFactor(d, b));
-  const answer = a === "mi" || a === "gal" ? tidy(chainValue(n, solution)) : convert(n, from, to);
+  const answer = a === "mi" ? tidy(chainValue(n, solution)) : convert(n, from, to);
   // The classic slip: the bottom unit's factor flipped, multiplying where it should divide.
   const flipped = tidy(solution.reduce((v, f, i) => (i === solution.length - 1 && b !== d ? (v * f.bottom.n) / f.top.n : (v * f.top.n) / f.bottom.n), n));
   return {
@@ -64,7 +63,7 @@ export const RATE_PRACTICE: Maker[] = [
   R(3, 4.8, per("L", "min"), per("mL", "s")),
   R(4, 30, per("mi", "hr"), per("m", "s"), " Use 1,609 m = 1 mi."),
   R(5, 2.5, per("g", "s"), per("kg", "hr")),
-  R(6, 20, per("gal", "min"), per("L", "s"), " Use 3.785 L = 1 gal."),
+  R(6, 18, per("L", "hr"), per("mL", "min")),
   R(7, 600, per("cm", "min"), per("m", "s")),
 ];
 
@@ -77,12 +76,12 @@ export const EXIT_3: Maker[] = [
   fixed("exit-3-derived", ["vocab"], {
     kind: "recall",
     prompt: "Define derived unit, and give two examples.",
-    model: "A unit made by combining base units — for example the joule, the newton, the watt or m³.",
+    model: "A unit made by combining base units — for example the newton (force), the joule (energy) or the pascal (pressure).",
     keys: [
       { label: "made by combining base units", any: ["combin", "made from", "made of", "made by", "built from", "base unit", "two or more"] },
       { label: "two examples", any: ["joule", "newton", "watt", "m³", "m3", "cubic", "volt", "m/s", "speed", "area", "volume", "density", "pascal"], count: 2 },
     ],
-    why: "Derived units combine base units: a joule, a newton, a watt, m³.",
+    why: "Derived units combine base units: the newton, the joule, the pascal, the hertz.",
   }),
   fixed("exit-3-why-one", ["factor-idea"], {
     kind: "recall",
@@ -194,4 +193,31 @@ export const factTF: Maker = {
   },
 };
 
-export const GENERATORS_3: Maker[] = [rateMaker("rate"), recallTerm("recall-term", TERMS), termFromDef("term-from-def", TERMS), defFromTerm("def-from-term", TERMS), factTF];
+
+/** The SI sheet's seven base units: each quantity's unit and symbol, from memory. */
+export const baseUnitsTable: Maker = fixed("si-base-units", ["vocab"], {
+  kind: "table",
+  prompt: "The seven SI base units: write each one's name and symbol.",
+  context: ["Leave a box blank if you don't know it yet."],
+  columns: ["Quantity", "Unit", "Symbol"],
+  rows: BASE_UNITS.map((b) => [
+    { given: b.quantity },
+    { text: [b.unit, b.unit + "s", ...(b.unit === "meter" ? ["metre"] : [])], placeholder: "unit" },
+    { text: [b.symbol], caseSensitive: true, placeholder: "symbol" },
+  ]),
+  why: BASE_UNITS.map((b) => `${b.quantity.toLowerCase()}: ${b.unit} (${b.symbol})`).join("; ") + ". Every other unit is built from these.",
+});
+
+/** "What is the SI base unit of time?" or "What does the symbol K stand for?" */
+export const baseUnitQuestion: Maker = {
+  id: "si-base-unit",
+  concepts: ["vocab"],
+  make(r) {
+    const b = pick(r, BASE_UNITS);
+    return r() < 0.6
+      ? { kind: "text", prompt: `What is the SI base unit of ${b.quantity.toLowerCase()}?`, accept: [b.unit, b.unit + "s"], why: `${b.quantity}: the ${b.unit} (${b.symbol}).` }
+      : { kind: "text", prompt: `Which SI base unit has the symbol ${b.symbol}?`, accept: [b.unit, b.unit + "s"], caseSensitive: false, why: `${b.symbol} is the ${b.unit}, the base unit of ${b.quantity.toLowerCase()}.` };
+  },
+};
+
+export const GENERATORS_3: Maker[] = [baseUnitQuestion, rateMaker("rate"), recallTerm("recall-term", TERMS), termFromDef("term-from-def", TERMS), defFromTerm("def-from-term", TERMS), factTF];

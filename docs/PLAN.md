@@ -50,6 +50,19 @@ Rules the site keeps, from walking through it as a first-time 13-year-old:
 - **Notes aren't the answer key.** The notes' worked examples never use a practice or exit question's numbers. Notes introduce at most four new terms at a time, and the cylinder notes show a drawn cylinder with the bottom of the curve marked.
 - **Gentle first contact.** The first warm-up says to leave blank what he doesn't know yet. Answers like "a million" are read as numbers.
 
+## Matched to the class handouts
+
+- **Prefixes follow the class's metric ladder:** King Henry Doesn't Usually Drink Chocolate Milk (kilo, hecto, deca, base unit, deci, centi, milli) on meters, liters and grams. Each step down multiplies by 10 and moves the decimal one place right; each step up divides by 10 and moves it left. Mega, micro, watts, m³ and gallons are gone, and volume sticks to cm³, mL and L.
+- **Scientific notation follows the class's four steps:**
+  1. Move the decimal to the right of the first non-zero number.
+  2. Count the places it moved.
+  3. Moved right: the exponent is negative.
+  4. Moved left: the exponent is positive.
+
+  A "move the decimal" question has him move the point along the digits and write the exponent. A miss names the step that went wrong. Answers in scientific notation are typed in two boxes, the number and a raised exponent.
+- **The SI sheet's seven base units** (quantity, unit, symbol) are in the vocabulary.
+- **The plan's "three traps" are no longer taught.**
+
 ## Question types
 
 | Type | Status | What it asks |
@@ -86,7 +99,7 @@ Each fault gets its own note, and a worked setup is shown after a miss. Guided q
 - The plan's slips are named where they happen: the diameter used as the radius, a radius not squared, liters multiplied instead of divided, inches left unconverted, the box around an L, and a percent difference divided by the wrong volume.
 - Answers from π are accepted to a sensible rounding and shown rounded ("about 417.4 cm³").
 
-**Endless practice (built).** He chooses ideas and questions keep coming, weighted toward the weakest and most overdue ideas. It never repeats the maker just used, a miss comes back three questions later, and only generators take part.
+**Endless practice (built).** A "Share link" button makes a link (`…/#practice=rates,two-step`) that opens practice straight on the chosen ideas. He chooses ideas and questions keep coming, weighted toward the weakest and most overdue ideas. It never repeats the maker just used, a miss comes back three questions later, and only generators take part.
 
 ## Open questions (for the teacher)
 

@@ -92,7 +92,7 @@ describe("unit 1", () => {
 
   it("keeps the plan's answer key", () => {
     const answers = (ms: typeof PRACTICE_A) => ms.map((m) => m.make(rng(1))).map((q) => (q.kind === "number" ? q.answer : q.kind === "choice" ? q.choices[q.correct] : null));
-    expect(answers(PRACTICE_A)).toEqual([1000, 100, 1000, 1_000_000, 1_000_000, "1 Mg, a billion times bigger", "mkg"]);
+    expect(answers(PRACTICE_A)).toEqual([1000, 100, 1000, 10, 10, 100]);
     const b = answers(PRACTICE_B) as number[];
     [4500, 602000, 0.031, 0.000007, 9.3e7, 5.6e-4, 1609, 0.04].forEach((v, i) => expect(b[i]).toBeCloseTo(v, 12));
     expect(answers(EXIT_1)).toEqual([0.01, 0.01, 0.0072, 9]);
@@ -108,5 +108,36 @@ describe("unit 1", () => {
     p = finishLesson(p, warm.id, [{ makerId: "to-sci", concepts: ["sci-write"], correct: true }]);
     expect(p.carry).toEqual([]);
     expect(p.skill["sci-write"].s).toBe(1);
+  });
+});
+
+import { moveDecimal, prefixFill } from "../src/content/unit1";
+import { readAs } from "../src/ui/Decimal";
+import { UNIT, convert } from "../src/content/units";
+
+describe("the handout's methods", () => {
+  it("places the decimal where the four steps put it, with the right exponent", () => {
+    for (let s = 1; s <= 200; s++) {
+      const q = moveDecimal.make(rng(s));
+      if (q.kind !== "decimal") throw new Error("kind");
+      const value = Number(q.digits.slice(0, q.start) + "." + q.digits.slice(q.start));
+      const mantissa = Number(readAs(q.digits, q.target));
+      expect(mantissa, q.prompt).toBeGreaterThanOrEqual(1);
+      expect(mantissa, q.prompt).toBeLessThan(10);
+      expect(q.exponent, q.prompt).toBe(q.start - q.target);
+      expect(Math.abs(mantissa * 10 ** q.exponent - value) <= value * 1e-9, q.prompt).toBe(true);
+    }
+  });
+
+  it("moves along the ladder to the same answer the unit sizes give", () => {
+    for (let s = 1; s <= 200; s++) {
+      const q = prefixFill.make(rng(s * 31));
+      if (q.kind !== "number") throw new Error("kind");
+      const [n, from] = q.prompt.split(" = ")[0].split(" ");
+      expect(UNIT[from], from).toBeDefined();
+      expect(UNIT[q.unit!], q.unit).toBeDefined();
+      const want = convert(Number(n.replace(/,/g, "")), { num: [from], den: [] }, { num: [q.unit!], den: [] });
+      expect(Math.abs(q.answer - want) <= Math.abs(want) * 1e-9, q.prompt).toBe(true);
+    }
   });
 });
